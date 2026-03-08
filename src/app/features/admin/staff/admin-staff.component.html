@@ -1,0 +1,63 @@
+<div>
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-bold text-gray-900">Staff Management</h1>
+    <app-button (clicked)="addStaff()">
+      <mat-icon class="mr-2 text-sm">add</mat-icon>
+      Add Staff
+    </app-button>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <app-card *ngFor="let member of (staff$ | async)" class="hover:shadow-md transition-shadow">
+      <app-card-content>
+        <div class="flex items-start gap-4">
+          <!-- Avatar -->
+          <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+            <mat-icon class="text-primary">person</mat-icon>
+          </div>
+
+          <!-- Info -->
+          <div class="flex-1 min-w-0">
+            <h3 class="font-semibold text-lg text-gray-900 truncate">{{ member.name }}</h3>
+            <p class="text-sm text-gray-600 mb-3">{{ member.role }}</p>
+
+            <div class="space-y-2">
+              <div class="flex items-center gap-2 text-sm text-gray-600">
+                <mat-icon class="text-sm">email</mat-icon>
+                <span class="truncate">{{ member.email }}</span>
+              </div>
+              <div class="flex items-center gap-2 text-sm text-gray-600">
+                <mat-icon class="text-sm">phone</mat-icon>
+                <span>{{ member.phone }}</span>
+              </div>
+              <div class="flex items-center gap-2 text-sm">
+                <mat-icon class="text-sm text-primary">assignment</mat-icon>
+                <span class="text-gray-900 font-medium">{{ member.activeIssues }} active issues</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex gap-2 mt-4 pt-4 border-t border-gray-200">
+          <app-button variant="outline" size="sm" class="flex-1">
+            Edit
+          </app-button>
+          <app-button variant="ghost" size="sm">
+            <mat-icon class="text-sm">more_vert</mat-icon>
+          </app-button>
+        </div>
+      </app-card-content>
+    </app-card>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="(staff$ | async)?.length === 0" class="text-center py-12">
+    <mat-icon class="text-6xl text-gray-300 mb-4">people</mat-icon>
+    <h3 class="text-lg font-medium text-gray-900 mb-2">No staff members yet</h3>
+    <p class="text-gray-600 mb-4">Add staff members to manage maintenance issues.</p>
+    <app-button (clicked)="addStaff()">
+      Add Your First Staff Member
+    </app-button>
+  </div>
+</div>

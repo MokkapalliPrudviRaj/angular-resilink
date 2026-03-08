@@ -1,0 +1,143 @@
+<div class="min-h-screen bg-[#f8fafc] flex items-center justify-center px-4 py-12 relative overflow-hidden">
+  <!-- Animated background elements (Subtle) -->
+  <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+    <div class="absolute top-[-10%] left-[-5%] w-[40%] h-[40%] bg-purple-100/50 rounded-full blur-[120px] animate-blob">
+    </div>
+    <div
+      class="absolute bottom-[-10%] right-[-5%] w-[40%] h-[40%] bg-blue-100/50 rounded-full blur-[120px] animate-blob animation-delay-2000">
+    </div>
+  </div>
+
+  <!-- Card Container -->
+  <div
+    class="bg-white w-full max-w-[480px] rounded-[24px] shadow-[0_20px_50px_rgba(0,0,0,0.08)] border border-gray-100 relative z-20 overflow-hidden animate-scale-in">
+
+    <!-- Header with Close Button -->
+    <div class="p-8 pb-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 bg-[#5048e5] rounded-[14px] flex items-center justify-center shadow-lg shadow-indigo-200">
+          <mat-icon class="text-white">apartment</mat-icon>
+        </div>
+        <h2 class="text-[22px] font-bold text-[#5048e5] tracking-tight">ResiLink</h2>
+      </div>
+      <button (click)="goHome()" class="text-gray-400 hover:text-gray-600 transition-colors">
+        <mat-icon class="text-[20px] w-5 h-5">close</mat-icon>
+      </button>
+    </div>
+
+    <!-- Toggle Forms -->
+    <div class="px-8 pb-8">
+      <!-- Title Section -->
+      <div class="mb-8">
+        <h1 class="text-[32px] font-extrabold text-gray-900 leading-tight mb-2">
+          {{ isSignup ? 'Create Account' : 'Welcome Back' }}
+        </h1>
+        <p class="text-[15px] text-gray-500 font-medium">
+          {{ isSignup ? 'Register to manage your apartment maintenance' : 'Log in to manage your maintenance requests'
+          }}
+        </p>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <form *ngIf="!isSignup" [formGroup]="loginForm" (ngSubmit)="onLogin()" class="space-y-5 animate-fade-in-left">
+        <!-- Email Field -->
+        <div class="space-y-2">
+          <label class="block text-[15px] font-bold text-gray-900">Email Address</label>
+          <div class="relative group">
+            <mat-icon
+              class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-[18px] w-[18px] h-[18px]">email</mat-icon>
+            <input type="email" formControlName="email" placeholder="name@example.com"
+              class="w-full h-[54px] pl-12 pr-4 bg-[#f8fafc] border border-[#e2e8f0] rounded-[14px] text-[15px] font-medium text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#5048e5] focus:ring-[3px] focus:ring-[#5048e5]/10 transition-all" />
+          </div>
+        </div>
+
+        <!-- Password Field -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <label class="block text-[15px] font-bold text-gray-900">Password</label>
+            <a routerLink="/forgot-password" class="text-[13px] font-bold text-[#5048e5] hover:underline">Forgot?</a>
+          </div>
+          <div class="relative">
+            <mat-icon
+              class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-[18px] w-[18px] h-[18px]">lock</mat-icon>
+            <input [type]="showPassword ? 'text' : 'password'" formControlName="password" placeholder="••••••••"
+              class="w-full h-[54px] pl-12 pr-12 bg-[#f8fafc] border border-[#e2e8f0] rounded-[14px] text-[15px] font-medium text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#5048e5] focus:ring-[3px] focus:ring-[#5048e5]/10 transition-all" />
+            <button type="button" (click)="showPassword = !showPassword"
+              class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">
+              <mat-icon class="text-[20px]">{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <!-- Sign In Button -->
+        <button type="submit" [disabled]="loginForm.invalid || loading"
+          class="w-full h-[54px] bg-[#5048e5] hover:bg-[#4038d5] text-white font-bold text-[16px] rounded-[14px] shadow-lg shadow-indigo-100 flex items-center justify-center gap-2 transition-all hover:translate-y-[-1px] active:translate-y-[1px] disabled:opacity-70 disabled:cursor-not-allowed mt-8">
+          {{ loading ? 'Signing In...' : 'Sign In' }}
+          <mat-icon *ngIf="!loading" class="text-[18px] w-[18px] h-[18px]">arrow_forward</mat-icon>
+        </button>
+      </form>
+
+      <!-- SIGNUP FORM -->
+      <form *ngIf="isSignup" [formGroup]="signupForm" (ngSubmit)="onSignup()" class="space-y-5 animate-fade-in-right">
+        <!-- Email -->
+        <div class="space-y-2">
+          <label class="block text-[15px] font-bold text-gray-900">Email Address</label>
+          <div class="relative group">
+            <mat-icon
+              class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-[18px] w-[18px] h-[18px]">email</mat-icon>
+            <input type="email" formControlName="email" placeholder="name@example.com"
+              class="w-full h-[54px] pl-12 pr-4 bg-[#f8fafc] border border-[#e2e8f0] rounded-[14px] text-[15px] font-medium text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#5048e5] focus:ring-[3px] focus:ring-[#5048e5]/10 transition-all" />
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div class="space-y-2">
+          <label class="block text-[15px] font-bold text-gray-900">Password</label>
+          <div class="relative group">
+            <mat-icon
+              class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-[18px] w-[18px] h-[18px]">lock</mat-icon>
+            <input [type]="showPassword ? 'text' : 'password'" formControlName="password" placeholder="••••••••"
+              class="w-full h-[54px] pl-12 pr-12 bg-[#f8fafc] border border-[#e2e8f0] rounded-[14px] text-[15px] font-medium text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#5048e5] focus:ring-[3px] focus:ring-[#5048e5]/10 transition-all" />
+            <button type="button" (click)="showPassword = !showPassword"
+              class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">
+              <mat-icon class="text-[20px]">{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="space-y-2">
+          <label class="block text-[15px] font-bold text-gray-900">Confirm Password</label>
+          <div class="relative group">
+            <mat-icon
+              class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-[18px] w-[18px] h-[18px]">lock</mat-icon>
+            <input [type]="showConfirmPassword ? 'text' : 'password'" formControlName="confirmPassword"
+              placeholder="••••••••"
+              class="w-full h-[54px] pl-12 pr-12 bg-[#f8fafc] border border-[#e2e8f0] rounded-[14px] text-[15px] font-medium text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#5048e5] focus:ring-[3px] focus:ring-[#5048e5]/10 transition-all" />
+            <button type="button" (click)="showConfirmPassword = !showConfirmPassword"
+              class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">
+              <mat-icon class="text-[20px]">{{ showConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <!-- Create Account Button -->
+        <button type="submit" [disabled]="signupForm.invalid || loading"
+          class="w-full h-[54px] bg-[#5048e5] hover:bg-[#4038d5] text-white font-bold text-[16px] rounded-[14px] shadow-lg shadow-indigo-100 flex items-center justify-center gap-2 transition-all hover:translate-y-[-1px] active:translate-y-[1px] disabled:opacity-70 disabled:cursor-not-allowed mt-8">
+          {{ loading ? 'Creating Account...' : 'Create Account' }}
+          <mat-icon *ngIf="!loading" class="text-[18px] w-[18px] h-[18px]">arrow_forward</mat-icon>
+        </button>
+      </form>
+
+      <!-- Footer Switch -->
+      <div class="mt-8 text-center pt-6 border-t border-gray-50">
+        <p class="text-[14px] text-gray-500 font-medium">
+          {{ isSignup ? 'Already have an account?' : "Don't have an account?" }}
+          <button (click)="toggleMode()" class="text-[#5048e5] font-bold hover:underline ml-1">
+            {{ isSignup ? 'Sign In' : 'Sign Up' }}
+          </button>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

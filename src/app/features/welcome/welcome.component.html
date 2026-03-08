@@ -1,0 +1,246 @@
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 relative overflow-hidden">
+  <!-- Animated background elements -->
+  <div class="fixed inset-0 overflow-hidden pointer-events-none">
+    <div
+      class="absolute top-20 left-10 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob">
+    </div>
+    <div
+      class="absolute top-40 right-10 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-2000">
+    </div>
+    <div
+      class="absolute bottom-20 left-1/2 w-72 h-72 bg-pink-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-4000">
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="border-b border-gray-200 bg-white/80 backdrop-blur-md sticky top-0 z-50 animate-slide-down">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3 cursor-pointer hover:scale-105 transition-transform">
+          <div
+            class="w-10 h-10 bg-gradient-to-br from-[#5048e5] to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+            <mat-icon class="text-white">apartment</mat-icon>
+          </div>
+          <h1 class="text-xl font-bold bg-gradient-to-r from-[#5048e5] to-indigo-600 bg-clip-text text-transparent">
+            ResiLink</h1>
+        </div>
+        <div class="flex gap-2">
+          <a routerLink="/login">
+            <app-button variant="ghost">Login</app-button>
+          </a>
+          <a routerLink="/signup">
+            <app-button variant="ghost"
+              extraClass="bg-gradient-to-r from-[#5048e5] to-indigo-600 hover:from-[#4038d5] hover:to-indigo-700 rounded-lg text-white">
+              Get Started
+            </app-button>
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16">
+    <div class="grid lg:grid-cols-2 gap-12 items-center">
+      <!-- Left Content -->
+      <div class="text-left animate-fade-in-up">
+        <div class="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 rounded-full mb-6">
+          <mat-icon class="text-blue-600 text-sm w-4 h-4 mr-1">auto_awesome</mat-icon>
+          <span class="text-sm font-medium text-blue-600">Modern Maintenance Management</span>
+        </div>
+
+        <h1 class="text-5xl md:text-6xl font-bold mb-6 leading-tight">
+          Manage Apartment Maintenance
+          <span class="bg-gradient-to-r from-[#5048e5] to-indigo-600 bg-clip-text text-transparent">
+            Like a Pro
+          </span>
+        </h1>
+
+        <p class="text-xl text-gray-600 mb-8 leading-relaxed">
+          Streamline maintenance requests, track issues in real-time, and keep residents happy with our professional
+          management platform.
+        </p>
+
+        <div class="flex flex-col sm:flex-row gap-4 mb-8">
+          <a routerLink="/signup">
+            <app-button size="lg" variant="ghost"
+              extraClass="bg-gradient-to-r from-[#5048e5] to-indigo-600 hover:from-[#4038d5] hover:to-indigo-700 shadow-xl w-full px-2 py-4 sm:w-auto text-white rounded-xl transition-all hover:scale-105 active:scale-95">
+              Start Free Trial
+              <mat-icon class="ml-2 inline-block align-middle">arrow_forward</mat-icon>
+            </app-button>
+          </a>
+        </div>
+      </div>
+
+      <!-- Right Image -->
+      <div class="relative animate-fade-in-right">
+        <div class="relative rounded-2xl overflow-hidden shadow-2xl h-[50vh] min-h-[400px] lg:h-[70vh]">
+          <img
+            src="https://images.unsplash.com/photo-1559329146-807aff9ff1fb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjBhcGFydG1lbnQlMjBidWlsZGluZyUyMGV4dGVyaW9yfGVufDF8fHx8MTc3MjM0OTI0N3ww&ixlib=rb-4.1.0&q=80&w=1080"
+            alt="Modern apartment building" class="w-full h-full object-cover" />
+          <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+        </div>
+
+        <!-- Floating Stats Cards -->
+        <div
+          class="absolute -bottom-6 -left-6 bg-white rounded-xl shadow-lg p-4 border border-gray-100 hover:scale-105 transition-transform animate-bounce-slow">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+              <mat-icon class="text-green-600">check_circle</mat-icon>
+            </div>
+            <div>
+              <p class="text-2xl font-bold text-gray-900">98%</p>
+              <p class="text-xs text-gray-500">Satisfaction Rate</p>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="absolute -top-6 -right-6 bg-white rounded-xl shadow-lg p-4 border border-gray-100 hover:scale-105 transition-transform animate-bounce-slow animation-delay-1000">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+              <mat-icon class="text-blue-600">bolt</mat-icon>
+            </div>
+            <div>
+              <p class="text-2xl font-bold text-gray-900">24h</p>
+              <p class="text-xs text-gray-500">Avg Response</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Grid -->
+  <section class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="text-center mb-16 animate-fade-in">
+      <h2 class="text-4xl md:text-5xl font-bold mb-4">Everything you need</h2>
+      <p class="text-xl text-gray-600">
+        Powerful features for seamless maintenance management
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div *ngFor="let feature of features" class="group cursor-pointer">
+        <div
+          [class]="'relative h-full bg-gradient-to-br ' + feature.bgGradient + ' border-2 border-transparent hover:border-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden hover:-translate-y-2'">
+          <!-- Gradient overlay on hover -->
+          <div
+            [class]="'absolute inset-0 bg-gradient-to-br ' + feature.gradient + ' opacity-0 group-hover:opacity-10 transition-opacity duration-300 rounded-2xl'">
+          </div>
+
+          <!-- Icon -->
+          <div
+            [class]="'relative w-16 h-16 bg-gradient-to-br ' + feature.gradient + ' rounded-2xl flex items-center justify-center mb-6 shadow-lg group-hover:rotate-12 transition-transform duration-500'">
+            <mat-icon class="text-white scale-125">{{ feature.icon }}</mat-icon>
+          </div>
+
+          <!-- Content -->
+          <h3 class="text-2xl font-bold text-gray-900 mb-3">{{ feature.title }}</h3>
+          <p class="text-gray-600 text-lg leading-relaxed">
+            {{ feature.description }}
+          </p>
+
+          <!-- Arrow indicator -->
+          <div
+            class="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transition-all transform translate-x-4 group-hover:translate-x-0">
+            <mat-icon
+              [class]="'bg-gradient-to-br ' + feature.gradient + ' bg-clip-text text-transparent font-bold'">arrow_forward</mat-icon>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Social Proof Section -->
+  <section class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 overflow-hidden">
+    <div class="text-center mb-12">
+      <h2 class="text-4xl font-bold mb-4">Trusted by Property Managers</h2>
+      <p class="text-xl text-gray-600">
+        See what our customers have to say
+      </p>
+    </div>
+
+    <!-- Infinite Scrolling Reviews -->
+    <div class="relative overflow-hidden group">
+      <div class="flex gap-6 animate-scroll" [style.animation-play-state]="isHovering ? 'paused' : 'running'"
+        (mouseenter)="onHoverStart()" (mouseleave)="onHoverEnd()">
+
+        <!-- Double the list for seamless loop -->
+        <ng-container *ngFor="let list of [1, 2]">
+          <div *ngFor="let testimonial of testimonials"
+            class="flex-shrink-0 w-[400px] bg-white rounded-2xl p-6 shadow-lg border border-gray-200 hover:shadow-2xl hover:border-[#5048e5] transition-all cursor-pointer">
+            <div class="flex items-center gap-1 mb-4">
+              <mat-icon *ngFor="let star of [1,2,3,4,5]" class="text-yellow-400"
+                [class.text-gray-300]="star > testimonial.rating">star</mat-icon>
+            </div>
+            <p class="text-gray-700 mb-6 leading-relaxed italic">
+              "{{ testimonial.review }}"
+            </p>
+            <div class="flex items-center gap-3">
+              <div
+                class="w-12 h-12 bg-gradient-to-br from-[#5048e5] to-indigo-600 rounded-full flex items-center justify-center text-white font-bold">
+                {{ testimonial.avatar }}
+              </div>
+              <div>
+                <p class="font-semibold text-gray-900">{{ testimonial.name }}</p>
+                <p class="text-sm text-gray-500">{{ testimonial.role }}, {{ testimonial.company }}</p>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <app-card
+      extraClass="bg-gradient-to-br from-[#5048e5] via-indigo-600 to-[#5048e5] border-0 text-white overflow-hidden relative rounded-3xl shadow-2xl">
+      <div
+        class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4xIj48cGF0aCBkPSJNMzYgMzBoNHYzMGgtNHpNNDAgMGg0djMwaC00eiIvPjwvZz48L2c+PC9zdmc+')] opacity-20">
+      </div>
+      <app-card-content class="p-16 text-center relative z-10">
+        <h2 class="text-5xl font-extrabold mb-6 text-white tracking-tight animate-fade-in">
+          Ready to get started?
+        </h2>
+        <p class="text-blue-100 mb-10 text-xl max-w-2xl mx-auto font-medium opacity-90">
+          Join property managers who trust our platform for maintenance management. Start your free trial today!
+        </p>
+        <div class="flex gap-6 justify-center flex-wrap items-center">
+          <a routerLink="/signup">
+            <app-button size="lg" variant="secondary"
+              extraClass="bg-white text-[#5048e5] hover:bg-gray-50 rounded-xl px-4 py-2 text-lg font-bold shadow-xl transition-all hover:scale-110 active:scale-95">
+              Create Account
+              <mat-icon class="ml-2 inline-block font-bold">arrow_forward</mat-icon>
+            </app-button>
+          </a>
+        </div>
+      </app-card-content>
+    </app-card>
+  </section>
+
+  <!-- Footer -->
+  <footer class="border-t border-gray-200 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+        <div class="flex items-center gap-3">
+          <div
+            class="w-8 h-8 bg-gradient-to-br from-[#5048e5] to-indigo-600 rounded-lg flex items-center justify-center">
+            <mat-icon class="text-white text-sm scale-75">apartment</mat-icon>
+          </div>
+          <span
+            class="text-lg font-bold bg-gradient-to-r from-[#5048e5] to-indigo-600 bg-clip-text text-transparent">ResiLink</span>
+        </div>
+        <div class="text-center text-sm text-gray-600">
+          <p>© 2026 ResiLink. All rights reserved.</p>
+        </div>
+        <div class="flex gap-6 text-sm text-gray-600">
+          <a href="#" class="hover:text-[#5048e5] transition-colors">Privacy</a>
+          <a href="#" class="hover:text-[#5048e5] transition-colors">Terms</a>
+          <a href="#" class="hover:text-[#5048e5] transition-colors">Contact</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+</div>

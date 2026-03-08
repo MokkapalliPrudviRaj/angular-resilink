@@ -1,0 +1,30 @@
+# Compiled output
+/dist
+/.angular
+
+# Dependency directories
+/node_modules
+
+# IDEs and editors
+/.vscode
+/.idea
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# System Files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+/tmp
+/temp
