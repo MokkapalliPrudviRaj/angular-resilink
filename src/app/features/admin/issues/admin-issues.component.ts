@@ -31,7 +31,7 @@ import { categoryLabels } from '../../../core/data/mock-data';
     CardHeaderComponent,
     CardTitleComponent,
     CardContentComponent,
-    ButtonComponent,
+    // ButtonComponent,
   ],
   templateUrl: './admin-issues.component.html',
   styleUrls: ['./admin-issues.component.scss']

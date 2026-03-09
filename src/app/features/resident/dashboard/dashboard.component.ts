@@ -51,11 +51,6 @@ interface PriorityData {
     MatDialogModule,
     MatSnackBarModule,
     NgxChartsModule,
-    CardComponent,
-    CardHeaderComponent,
-    CardTitleComponent,
-    CardContentComponent,
-    ButtonComponent,
     StatusBadgeComponent,
     PriorityBadgeComponent
   ],
@@ -70,6 +65,7 @@ export class DashboardComponent implements OnInit {
   activeTabIndex = 0;
   searchQuery = '';
   filterStatusId: number | 'all' = 'all';
+  mobileMenuOpen = false;
 
   stats = {
     total: 0,
@@ -80,7 +76,12 @@ export class DashboardComponent implements OnInit {
 
   categoryData: CategoryData[] = [];
   priorityData: PriorityData[] = [];
-  chartColors = ['#5048e5', '#3b82f6', '#60a5fa', '#93c5fd', '#bfdbfe'];
+  chartColors: any = {
+    domain: ['#5048e5', '#818cf8', '#a5b4fc', '#c7d2fe', '#e0e7ff']
+  };
+  priorityScheme: any = {
+    domain: ['#10b981', '#f59e0b', '#ef4444', '#7c3aed']
+  };
 
   constructor(
     public authService: AuthService,
@@ -98,56 +99,73 @@ export class DashboardComponent implements OnInit {
     const user = this.authService.getCurrentUser();
     if (!user) return;
 
-    this.issues$ = this.issueService.getIssuesByCustomerId(user.customerId!);
+    const customerId = user.customerId || user.id;
+    console.log('Fetching issues for customer:', customerId);
 
-    this.issues$.subscribe(issues => {
-      this.issues = issues;
-      this.calculateStats(issues);
-      this.calculateCategoryBreakdown(issues);
-      this.calculatePriorityBreakdown(issues);
-      this.updateRecentActivity(issues);
-      this.updateFilteredIssues();
+    this.issues$ = this.issueService.getIssuesByCustomerId(customerId);
+
+    this.issues$.subscribe({
+      next: (issues) => {
+        console.log(`Loaded ${issues.length} issues`);
+        this.issues = issues;
+        this.calculateStats(issues);
+        this.calculateCategoryBreakdown(issues);
+        this.calculatePriorityBreakdown(issues);
+        this.updateRecentActivity(issues);
+        this.updateFilteredIssues();
+      },
+      error: (err) => console.error('Dashboard load error:', err)
     });
   }
 
   calculateStats(issues: Issue[]): void {
     this.stats.total = issues.length;
+    // statusId 1: open, 2: in-progress, 3: resolved, 4: closed
     this.stats.open = issues.filter(i => i.statusId === 1).length;
     this.stats.inProgress = issues.filter(i => i.statusId === 2).length;
     this.stats.resolved = issues.filter(i => i.statusId === 3 || i.statusId === 4).length;
+
+    console.log('Calculated Stats:', this.stats);
   }
 
   calculateCategoryBreakdown(issues: Issue[]): void {
     const breakdown: Record<string, number> = {};
     issues.forEach(issue => {
-      breakdown[issue.category] = (breakdown[issue.category] || 0) + 1;
+      const cat = (issue.category || 'other').toLowerCase();
+      breakdown[cat] = (breakdown[cat] || 0) + 1;
     });
-    this.categoryData = Object.entries(breakdown).map(([name, value]) => ({ name, value }));
+    this.categoryData = Object.entries(breakdown).map(([name, value]) => ({
+      name: name.charAt(0).toUpperCase() + name.slice(1),
+      value
+    }));
   }
 
   calculatePriorityBreakdown(issues: Issue[]): void {
     const priorityMap: Record<string, string> = {
+      'low': 'Low',
+      'medium': 'Medium',
+      'high': 'High',
+      'urgent': 'Urgent',
       '0': 'Low',
       '1': 'Medium',
       '2': 'High',
       '3': 'Urgent'
     };
 
-    const breakdown = {
-      '0': 0,
-      '1': 0,
-      '2': 0,
-      '3': 0
+    const breakdown: Record<string, number> = {
+      'Low': 0,
+      'Medium': 0,
+      'High': 0,
+      'Urgent': 0
     };
 
     issues.forEach(issue => {
-      if (issue.priority in breakdown) {
-        breakdown[issue.priority as keyof typeof breakdown]++;
-      }
+      const label = priorityMap[issue.priority] || 'Medium';
+      breakdown[label]++;
     });
 
-    this.priorityData = Object.entries(breakdown).map(([key, value]) => ({
-      name: priorityMap[key],
+    this.priorityData = Object.entries(breakdown).map(([name, value]) => ({
+      name,
       value
     }));
   }
@@ -159,16 +177,26 @@ export class DashboardComponent implements OnInit {
   }
 
   updateFilteredIssues(): void {
+    if (!this.issues) return;
+
     this.filteredIssues = this.issues.filter(issue => {
-      const matchesSearch = issue.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-        issue.description.toLowerCase().includes(this.searchQuery.toLowerCase());
-      const matchesStatus = this.filterStatusId === 'all' || issue.statusId === this.filterStatusId;
+      const matchesSearch = !this.searchQuery ||
+        issue.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+        issue.description?.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+        issue.category?.toLowerCase().includes(this.searchQuery.toLowerCase());
+
+      const matchesStatus = this.filterStatusId === 'all' || String(issue.statusId) === String(this.filterStatusId);
       return matchesSearch && matchesStatus;
     });
   }
 
   formatDate(date: string): string {
-    return formatDistanceToNow(new Date(date), { addSuffix: true });
+    if (!date) return 'just now';
+    try {
+      return formatDistanceToNow(new Date(date), { addSuffix: true });
+    } catch (e) {
+      return 'just now';
+    }
   }
 
   getStatusFromId(statusId: number): IssueStatus {
@@ -186,7 +214,11 @@ export class DashboardComponent implements OnInit {
       '0': 'low',
       '1': 'medium',
       '2': 'high',
-      '3': 'urgent'
+      '3': 'urgent',
+      'low': 'low',
+      'medium': 'medium',
+      'high': 'high',
+      'urgent': 'urgent'
     };
     return priorityMap[priority] || 'medium';
   }
@@ -199,36 +231,35 @@ export class DashboardComponent implements OnInit {
   openCreateIssue(): void {
     const user = this.authService.getCurrentUser();
     const dialogRef = this.dialog.open(CreateIssueDialogComponent, {
-      width: '600px',
-      maxWidth: '90vw',
+      width: '650px',
+      maxWidth: '95vw',
+      panelClass: 'premium-dialog',
       data: { user }
     });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        // Add the new issue to the service
-        this.issueService.createIssue(result);
-        this.loadIssues();
-        this.snackBar.open(
-          `Issue reported successfully! ETA: ${result.eta}`,
-          'Close',
-          {
-            duration: 3000,
-            horizontalPosition: 'center',
-            verticalPosition: 'top'
+        this.issueService.createIssue(result as any).subscribe({
+          next: (newIssue) => {
+            this.snackBar.open(
+              `Issue reported successfully!`,
+              'Close',
+              {
+                duration: 4000,
+                panelClass: ['success-snackbar']
+              }
+            );
+            this.loadIssues();
+          },
+          error: (err) => {
+            this.snackBar.open('Failed to create issue.', 'Close', { duration: 5000 });
           }
-        );
+        });
       }
     });
   }
 
   openIssueDetail(issue: Issue): void {
-    // TODO: Open issue detail dialog
-    console.log('Open issue detail', issue);
-  }
-
-  // Watch for search and filter changes
-  ngDoCheck(): void {
-    this.updateFilteredIssues();
+    this.snackBar.open(`Viewing detail for: ${issue.title}`, 'Close', { duration: 2000 });
   }
 }

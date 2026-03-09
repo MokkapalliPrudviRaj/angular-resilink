@@ -13,8 +13,8 @@ import { ToastService } from '../../../core/services/toast.service';
         CommonModule,
         ReactiveFormsModule,
         MatIconModule,
-        RouterLink,
-        ButtonComponent
+        // RouterLink,
+        // ButtonComponent
     ],
     templateUrl: './forgot-password.component.html',
     styleUrls: ['./forgot-password.component.scss']

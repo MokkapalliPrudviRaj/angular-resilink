@@ -16,7 +16,7 @@ export interface Issue {
   id: string;
   title: string;
   description: string;
-  category: 'plumbing' | 'electrical' | 'hvac' | 'appliance' | 'structural' | 'pest' | 'other';
+  category: string;
   status: 'open' | 'in-progress' | 'resolved' | 'closed';
   statusId: number;
   priority: 'low' | 'medium' | 'high' | 'urgent';

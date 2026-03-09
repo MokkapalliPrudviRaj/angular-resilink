@@ -17,7 +17,7 @@ import { ToastService } from '../../../core/services/toast.service';
     ReactiveFormsModule,
     MatIconModule,
     RouterLink,
-    ButtonComponent
+    // ButtonComponent
   ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
@@ -38,7 +38,7 @@ export class LoginComponent implements OnInit {
     private toast: ToastService
   ) {
     this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
+      username: ['', [Validators.required]],
       password: ['', Validators.required]
     });
 
@@ -73,9 +73,9 @@ export class LoginComponent implements OnInit {
     if (this.loginForm.invalid) return;
 
     this.loading = true;
-    const { email, password } = this.loginForm.value;
+    const { username, password } = this.loginForm.value;
 
-    this.authService.login(email, password).subscribe({
+    this.authService.login(username, password).subscribe({
       next: (user) => {
         this.toast.success(`Welcome back, ${user.name}!`);
         const path = user.role === 'admin' ? '/admin' : '/dashboard';
@@ -102,8 +102,10 @@ export class LoginComponent implements OnInit {
 
     this.authService.signup(email, password, confirmPassword).subscribe({
       next: (user) => {
-        this.toast.success('Account created successfully!');
-        this.router.navigate(['/dashboard']);
+        this.toast.success(`Account created successfully! Please login with username: ${user.username}`);
+        this.toggleMode();
+        // pre-fill the username in the login form
+        this.loginForm.patchValue({ username: user.username });
       },
       error: (error) => {
         this.toast.error(error.message || 'Signup failed. Please try again.');

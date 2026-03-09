@@ -29,20 +29,14 @@ export class IssueService {
    * GET http://localhost:8080/complaints/client/:clientId/status/:statusId
    */
   getIssuesByStatus(clientId: string, statusId: number): Observable<Issue[]> {
-    const headers = this.authService.getAuthHeaders();
-
-    return this.http.get<any>(`${this.API_URL}/complaints/client/${clientId}/status/${statusId}`, {
-      headers
-    }).pipe(
+    return this.http.get<any>(`${this.API_URL}/complaints/client/${clientId}/status/${statusId}`).pipe(
       map(response => {
-        // Map API response to Issue array
-        const complaints = response.complaints || response.data || response;
+        const complaints = Array.isArray(response) ? response : (response.complaints || response.data || []);
         return this.mapComplaintsToIssues(complaints);
       }),
       catchError(error => {
-        console.error('Failed to fetch issues by status:', error);
-        // Fallback to local data
-        return this.filterIssues({ status: this.mapStatusIdToStatus(statusId) });
+        console.error(`Failed to fetch issues by status ${statusId}:`, error);
+        return of([]); // Return empty array on failure instead of error, so merge observables succeed
       })
     );
   }
@@ -66,72 +60,67 @@ export class IssueService {
   createIssue(issueData: Omit<Issue, 'id' | 'createdAt' | 'updatedAt' | 'comments' | 'images'>): Observable<Issue> {
     const user = this.authService.getCurrentUser();
 
-    if (!user || !user.clientId || !user.customerId) {
-      console.warn('User missing clientId or customerId, using fallback');
+    if (!user) {
+      console.warn('No user logged in, using fallback');
       return this.createIssueFallback(issueData);
     }
 
-    const headers = this.authService.getAuthHeaders();
+    const clientId = user.clientId || 'KANHA1';
+    const customerId = user.customerId || user.id;
+
+    console.log('Creating issue with:', { clientId, customerId, title: issueData.title });
 
     // Map Issue model to API complaint structure
     const complaintData = {
-      clientId: user.clientId,
-      customerId: user.customerId,
+      clientId: clientId,
+      customerId: customerId,
       title: issueData.title,
       category: this.capitalizeFirst(issueData.category),
-      roomNumber: issueData.apartment,
+      roomNumber: issueData.apartment || user.roomNumber || user.apartment || 'N/A',
       description: issueData.description,
-      notes: [`Created by ${user.name}`, `Category: ${issueData.category}`],
-      statusId: this.mapStatusToStatusId(issueData.status),
-      priority: this.mapPriorityToPriorityString(issueData.priority),
-      reportedBy: user.name
+      notes: issueData.notes && issueData.notes.length > 0 ? issueData.notes : [`Reported by ${user.name}`],
+      statusId: issueData.statusId || this.mapStatusToStatusId(issueData.status),
+      priority: this.mapPriorityToPriorityString(issueData.priority)
     };
 
     return this.http.post<any>(
-      `${this.API_URL}/complaints/create/client/${user.clientId}/customer/${user.customerId}`,
-      complaintData,
-      { headers }
+      `${this.API_URL}/complaints/create/client/${clientId}/customer/${customerId}`,
+      complaintData
     ).pipe(
+      tap(resp => console.log('API Create Response:', resp)),
       map(response => {
-        // Map API response to Issue
         const newIssue: Issue = {
           id: response.id || `issue-${Date.now()}`,
           title: issueData.title,
           description: issueData.description,
           category: issueData.category,
-          notes: [`Created by ${user.name}`, `Category: ${issueData.category}`],
-          status: issueData.status,
-          statusId: this.mapStatusToStatusId(issueData.status),
+          notes: complaintData.notes,
+          status: this.mapStatusIdToStatus(complaintData.statusId),
+          statusId: complaintData.statusId,
           priority: issueData.priority,
           createdAt: response.createdAt || new Date().toISOString(),
           updatedAt: response.updatedAt || new Date().toISOString(),
-          eta: categoryETAs[issueData.category],
-          residentId: issueData.residentId,
-          residentName: issueData.residentName,
-          apartment: issueData.apartment,
-          assignedTo: issueData.assignedTo,
+          eta: categoryETAs[issueData.category] || '3-5 business days',
+          residentId: customerId,
+          residentName: user.name,
+          apartment: complaintData.roomNumber,
+          assignedTo: response.assignedTo || '',
           comments: [],
           images: [],
-          isCommonArea: issueData.isCommonArea
+          isCommonArea: issueData.isCommonArea || false
         };
 
-        // Add to local state
         const currentIssues = this.issuesSubject.value;
         this.issuesSubject.next([newIssue, ...currentIssues]);
-
         return newIssue;
       }),
       catchError(error => {
         console.error('Failed to create issue via API:', error);
-        // Fallback to local creation
         return this.createIssueFallback(issueData);
       })
     );
   }
 
-  /**
-   * Fallback method to create issue locally
-   */
   private createIssueFallback(issueData: Omit<Issue, 'id' | 'createdAt' | 'updatedAt' | 'comments' | 'images'>): Observable<Issue> {
     const newIssue: Issue = {
       ...issueData,
@@ -146,7 +135,6 @@ export class IssueService {
 
     const currentIssues = this.issuesSubject.value;
     this.issuesSubject.next([newIssue, ...currentIssues]);
-
     return of(newIssue).pipe(delay(300));
   }
 
@@ -167,7 +155,6 @@ export class IssueService {
     const newIssues = [...currentIssues];
     newIssues[index] = updatedIssue;
     this.issuesSubject.next(newIssues);
-
     return of(updatedIssue).pipe(delay(300));
   }
 
@@ -206,7 +193,6 @@ export class IssueService {
     const newIssues = [...currentIssues];
     newIssues[issueIndex] = updatedIssue;
     this.issuesSubject.next(newIssues);
-
     return of(newComment).pipe(delay(300));
   }
 
@@ -239,52 +225,31 @@ export class IssueService {
     return this.issues$.pipe(
       map(issues => {
         let filtered = issues;
-
-        if (filters.status) {
-          filtered = filtered.filter(issue => issue.status === filters.status);
-        }
-
-        if (filters.priority) {
-          filtered = filtered.filter(issue => issue.priority === filters.priority);
-        }
-
-        if (filters.category) {
-          filtered = filtered.filter(issue => issue.category === filters.category);
-        }
-
+        if (filters.status) filtered = filtered.filter(i => i.status === filters.status);
+        if (filters.priority) filtered = filtered.filter(i => i.priority === filters.priority);
+        if (filters.category) filtered = filtered.filter(i => i.category === filters.category);
         return filtered;
       })
     );
   }
 
-  // Helper methods for mapping between API and frontend models
-
   private mapStatusToStatusId(status: IssueStatus): number {
     const statusMap: Record<IssueStatus, number> = {
-      'open': 1,
-      'in-progress': 2,
-      'resolved': 3,
-      'closed': 4
+      'open': 1, 'in-progress': 2, 'resolved': 3, 'closed': 4
     };
     return statusMap[status] || 1;
   }
 
   private mapStatusIdToStatus(statusId: number): IssueStatus {
     const statusMap: Record<number, IssueStatus> = {
-      1: 'open',
-      2: 'in-progress',
-      3: 'resolved',
-      4: 'closed'
+      1: 'open', 2: 'in-progress', 3: 'resolved', 4: 'closed'
     };
     return statusMap[statusId] || 'open';
   }
 
   private mapPriorityToPriorityString(priority: IssuePriority): string {
     const priorityMap: Record<IssuePriority, string> = {
-      'low': '0',
-      'medium': '1',
-      'high': '2',
-      'urgent': '3'
+      'low': '0', 'medium': '1', 'high': '2', 'urgent': '3'
     };
     return priorityMap[priority] || '0';
   }
@@ -294,41 +259,72 @@ export class IssueService {
   }
 
   private mapComplaintsToIssues(complaints: any[]): Issue[] {
-    return complaints.map(complaint => ({
-      id: complaint.id || complaint._id,
-      title: complaint.title,
-      description: complaint.description,
-      category: complaint.category?.toLowerCase() || 'other',
-      notes: complaint.notes || [],
-      status: this.mapStatusIdToStatus(complaint.statusId || 1),
-      statusId: complaint.statusId || 1,
-      priority: this.mapPriorityStringToPriority(complaint.priority || '0'),
-      createdAt: complaint.createdAt || new Date().toISOString(),
-      updatedAt: complaint.updatedAt || new Date().toISOString(),
-      eta: complaint.eta || categoryETAs[(complaint.category?.toLowerCase() || 'other') as IssueCategory],
-      residentId: complaint.customerId || '',
-      residentName: complaint.reportedBy || 'Unknown',
-      apartment: complaint.roomNumber || 'N/A',
-      assignedTo: complaint.assignedTo,
-      comments: [],
-      images: complaint.images || [],
-      isCommonArea: false
-    }));
+    return complaints.map(complaint => {
+      const statusId = Number(complaint.statusId || 1);
+      return {
+        id: complaint.id || complaint._id,
+        title: complaint.title,
+        description: complaint.description,
+        category: (complaint.category || 'other').toLowerCase(),
+        notes: complaint.notes || [],
+        status: this.mapStatusIdToStatus(statusId),
+        statusId: statusId,
+        priority: this.mapPriorityStringToPriority(String(complaint.priority || '0')),
+        createdAt: complaint.createdAt || new Date().toISOString(),
+        updatedAt: complaint.updatedAt || new Date().toISOString(),
+        eta: complaint.eta || categoryETAs[((complaint.category || 'other').toLowerCase()) as IssueCategory],
+        residentId: complaint.customerId || '',
+        residentName: complaint.reportedBy || 'Unknown',
+        apartment: complaint.roomNumber || 'N/A',
+        assignedTo: complaint.assignedTo,
+        comments: [],
+        images: complaint.images || [],
+        isCommonArea: false
+      };
+    });
   }
 
   private mapPriorityStringToPriority(priority: string): IssuePriority {
     const priorityMap: Record<string, IssuePriority> = {
-      '0': 'low',
-      '1': 'medium',
-      '2': 'high',
-      '3': 'urgent'
+      '0': 'low', '1': 'medium', '2': 'high', '3': 'urgent'
     };
     return priorityMap[priority] || 'low';
   }
 
-  getIssuesByCustomerId(customerId: string) {
-    return this.issues$.pipe(
-      map((issues) => issues.filter(issue => issue.residentId === customerId))
+  getIssuesByCustomerId(customerId: string): Observable<Issue[]> {
+    const user = this.authService.getCurrentUser();
+    if (!user || !user.clientId) {
+      console.warn(`[IssueService] ClientId missing, falling back to mock data`);
+      return this.issues$.pipe(map(issues => issues.filter(i => i.residentId === customerId)));
+    }
+
+    // Since the new API requirement is fetching by statusId, we need to fetch all statuses requested
+    // Status IDs: 1 (open), 2 (in progress), 3 (resolved), 4 (closed)
+    const statusIds = [1, 2, 3, 4];
+
+    // We create multiple observables for each status request
+    const requests = statusIds.map(statusId =>
+      this.getIssuesByStatus(user.clientId!, statusId).pipe(
+        // Filter the fetched status complaints down to only the current customer's complaints
+        map(issues => issues.filter(issue => issue.residentId === customerId))
+      )
     );
+
+    // Combine all requests using forkJoin to wait for all status fetches to finish
+    import('rxjs').then(({ forkJoin }) => {
+      forkJoin(requests).pipe(
+        map((nestedIssuesArray: Issue[][]) => {
+          // Flatten the array of arrays into a single array
+          const allUserIssues = nestedIssuesArray.flat();
+
+          // Sort by newest first
+          allUserIssues.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+          this.issuesSubject.next(allUserIssues);
+        })
+      ).subscribe();
+    });
+
+    return this.issues$;
   }
 }

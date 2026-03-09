@@ -1,6 +1,5 @@
 @tailwind base;
 @tailwind components;
-@tailwind utilities;
 
 /* Import Angular Material theme */
 @import '@angular/material/prebuilt-themes/indigo-pink.css';
@@ -68,3 +67,5 @@ body {
 .mat-mdc-fab.mat-primary {
   --mdc-fab-container-color: #5048e5;
 }
+
+@tailwind utilities;

@@ -40,13 +40,13 @@
 
       <!-- LOGIN FORM -->
       <form *ngIf="!isSignup" [formGroup]="loginForm" (ngSubmit)="onLogin()" class="space-y-5 animate-fade-in-left">
-        <!-- Email Field -->
+        <!-- Username Field -->
         <div class="space-y-2">
-          <label class="block text-[15px] font-bold text-gray-900">Email Address</label>
+          <label class="block text-[15px] font-bold text-gray-900">Username</label>
           <div class="relative group">
             <mat-icon
-              class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-[18px] w-[18px] h-[18px]">email</mat-icon>
-            <input type="email" formControlName="email" placeholder="name@example.com"
+              class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-[18px] w-[18px] h-[18px]">person</mat-icon>
+            <input type="text" formControlName="username" placeholder="e.g. 2026KANH..."
               class="w-full h-[54px] pl-12 pr-4 bg-[#f8fafc] border border-[#e2e8f0] rounded-[14px] text-[15px] font-medium text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#5048e5] focus:ring-[3px] focus:ring-[#5048e5]/10 transition-all" />
           </div>
         </div>
