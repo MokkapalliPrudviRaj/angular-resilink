@@ -29,6 +29,7 @@ export class LoginComponent implements OnInit {
   loading = false;
   showPassword = false;
   showConfirmPassword = false;
+  loginMethod: 'username' | 'email' = 'username';
 
   constructor(
     private fb: FormBuilder,
@@ -38,7 +39,9 @@ export class LoginComponent implements OnInit {
     private toast: ToastService
   ) {
     this.loginForm = this.fb.group({
-      username: ['', [Validators.required]],
+      username: [''],
+      clientId: ['KANHA1'],
+      email: [''],
       password: ['', Validators.required]
     });
 
@@ -69,13 +72,26 @@ export class LoginComponent implements OnInit {
     this.router.navigate([path], { replaceUrl: true });
   }
 
+  setLoginMethod(method: 'username' | 'email') {
+    this.loginMethod = method;
+  }
+
   onLogin(): void {
     if (this.loginForm.invalid) return;
 
     this.loading = true;
-    const { username, password } = this.loginForm.value;
+    const { username, clientId, email, password } = this.loginForm.value;
 
-    this.authService.login(username, password).subscribe({
+    let payload: any = {};
+    if (this.loginMethod === 'username') {
+      if (!username) { this.toast.error('Username is required'); this.loading = false; return; }
+      payload = { loginType: 'CUSTOMER_ID_PASSWORD', username, password };
+    } else {
+      if (!clientId || !email) { this.toast.error('Client ID and Email are required'); this.loading = false; return; }
+      payload = { loginType: 'CLIENT_EMAIL_PASSWORD', clientId, email, password };
+    }
+
+    this.authService.login(payload).subscribe({
       next: (user) => {
         this.toast.success(`Welcome back, ${user.name}!`);
         const path = user.role === 'admin' ? '/admin' : '/dashboard';

@@ -298,32 +298,22 @@ export class IssueService {
       return this.issues$.pipe(map(issues => issues.filter(i => i.residentId === customerId)));
     }
 
-    // Since the new API requirement is fetching by statusId, we need to fetch all statuses requested
-    // Status IDs: 1 (open), 2 (in progress), 3 (resolved), 4 (closed)
-    const statusIds = [1, 2, 3, 4];
+    // Call the combined api endpoint that fetches all complaints for this customer
+    this.http.get<any>(`${this.API_URL}/complaints/all/client/${user.clientId}/customer/${customerId}`).pipe(
+      map(response => {
+        const complaints = Array.isArray(response) ? response : (response.complaints || response.data || []);
+        let allUserIssues = this.mapComplaintsToIssues(complaints);
 
-    // We create multiple observables for each status request
-    const requests = statusIds.map(statusId =>
-      this.getIssuesByStatus(user.clientId!, statusId).pipe(
-        // Filter the fetched status complaints down to only the current customer's complaints
-        map(issues => issues.filter(issue => issue.residentId === customerId))
-      )
-    );
+        // Sort by newest first
+        allUserIssues.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
-    // Combine all requests using forkJoin to wait for all status fetches to finish
-    import('rxjs').then(({ forkJoin }) => {
-      forkJoin(requests).pipe(
-        map((nestedIssuesArray: Issue[][]) => {
-          // Flatten the array of arrays into a single array
-          const allUserIssues = nestedIssuesArray.flat();
-
-          // Sort by newest first
-          allUserIssues.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-
-          this.issuesSubject.next(allUserIssues);
-        })
-      ).subscribe();
-    });
+        this.issuesSubject.next(allUserIssues);
+      }),
+      catchError(error => {
+        console.error('Failed to fetch all issues by customerId:', error);
+        return of([]);
+      })
+    ).subscribe();
 
     return this.issues$;
   }

@@ -40,8 +40,18 @@
 
       <!-- LOGIN FORM -->
       <form *ngIf="!isSignup" [formGroup]="loginForm" (ngSubmit)="onLogin()" class="space-y-5 animate-fade-in-left">
+        <!-- Login Method Toggle -->
+        <div class="flex p-1 bg-gray-100 rounded-[14px]">
+          <button type="button" (click)="setLoginMethod('username')" [class.bg-white]="loginMethod === 'username'"
+            [class.shadow]="loginMethod === 'username'" [class.text-indigo-600]="loginMethod === 'username'"
+            class="flex-1 py-2 text-sm font-bold text-gray-500 rounded-[10px] transition-all">By Username</button>
+          <button type="button" (click)="setLoginMethod('email')" [class.bg-white]="loginMethod === 'email'"
+            [class.shadow]="loginMethod === 'email'" [class.text-indigo-600]="loginMethod === 'email'"
+            class="flex-1 py-2 text-sm font-bold text-gray-500 rounded-[10px] transition-all">By Email</button>
+        </div>
+
         <!-- Username Field -->
-        <div class="space-y-2">
+        <div *ngIf="loginMethod === 'username'" class="space-y-2 animate-in fade-in zoom-in-95 duration-200">
           <label class="block text-[15px] font-bold text-gray-900">Username</label>
           <div class="relative group">
             <mat-icon
@@ -50,6 +60,28 @@
               class="w-full h-[54px] pl-12 pr-4 bg-[#f8fafc] border border-[#e2e8f0] rounded-[14px] text-[15px] font-medium text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#5048e5] focus:ring-[3px] focus:ring-[#5048e5]/10 transition-all" />
           </div>
         </div>
+
+        <!-- Client ID and Email Fields -->
+        <ng-container *ngIf="loginMethod === 'email'">
+          <div class="space-y-2 animate-in fade-in zoom-in-95 duration-200">
+            <label class="block text-[15px] font-bold text-gray-900">Client ID</label>
+            <div class="relative group">
+              <mat-icon
+                class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-[18px] w-[18px] h-[18px]">business</mat-icon>
+              <input type="text" formControlName="clientId" placeholder="e.g. KANHA1"
+                class="w-full h-[54px] pl-12 pr-4 bg-[#f8fafc] border border-[#e2e8f0] rounded-[14px] text-[15px] font-medium text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#5048e5] focus:ring-[3px] focus:ring-[#5048e5]/10 transition-all uppercase" />
+            </div>
+          </div>
+          <div class="space-y-2 animate-in fade-in zoom-in-95 duration-200">
+            <label class="block text-[15px] font-bold text-gray-900">Email Address</label>
+            <div class="relative group">
+              <mat-icon
+                class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-[18px] w-[18px] h-[18px]">email</mat-icon>
+              <input type="email" formControlName="email" placeholder="name@example.com"
+                class="w-full h-[54px] pl-12 pr-4 bg-[#f8fafc] border border-[#e2e8f0] rounded-[14px] text-[15px] font-medium text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#5048e5] focus:ring-[3px] focus:ring-[#5048e5]/10 transition-all" />
+            </div>
+          </div>
+        </ng-container>
 
         <!-- Password Field -->
         <div class="space-y-2">

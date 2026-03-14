@@ -38,11 +38,8 @@ export class AuthService {
     }
   }
 
-  login(username: string, password: string): Observable<User> {
-    return this.http.post<any>(`${this.API_URL}/auth/login`, {
-      username,
-      password
-    }).pipe(
+  login(payload: any): Observable<User> {
+    return this.http.post<any>(`${this.API_URL}/auth/login`, payload).pipe(
       tap(resp => console.log('[AuthDiagnostic] Login raw response:', resp)),
       map(response => {
         // More robust token extraction from various common API response patterns
@@ -56,15 +53,15 @@ export class AuthService {
         console.log('[AuthDiagnostic] Extracted token present:', !!token);
 
         const user: User = {
-          id: response.id || response.userId || response.data?.id || username,
+          id: response.id || response.userId || response.data?.id || payload.username || payload.email,
           customerId: response.customerId || response.customer_id || response.data?.customerId || response.id || '',
-          clientId: response.clientId || response.client_id || response.data?.clientId || 'KANHA1',
-          name: response.name || response.fullName || response.data?.name || username,
-          email: response.email || response.data?.email || `${username}@apartment.com`,
+          clientId: response.clientId || response.client_id || response.data?.clientId || payload.clientId || 'KANHA1',
+          name: response.name || response.fullName || response.data?.name || payload.username || payload.email,
+          email: response.email || response.data?.email || payload.email || `${payload.username || 'user'}@apartment.com`,
           phone: response.phone || response.data?.phone || '',
           role: response.role || (response.isAdmin ? 'admin' : 'resident'),
           apartment: response.roomNumber || response.apartment || response.apartmentNumber || response.data?.roomNumber,
-          username: username,
+          username: payload.username || response.username || payload.email,
           token: token
         };
 

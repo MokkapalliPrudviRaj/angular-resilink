@@ -28,8 +28,8 @@ export const routes: Routes = [
   {
     path: 'admin',
     loadComponent: () => import('./features/admin/layout/admin-layout.component').then(m => m.AdminLayoutComponent),
-    canActivate: [authGuard],
-    data: { role: 'admin' },
+    // canActivate: [authGuard],
+    // data: { role: 'admin' },
     children: [
       {
         path: '',
