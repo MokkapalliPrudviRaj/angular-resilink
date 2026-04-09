@@ -1,117 +1,112 @@
-<div class="flex h-screen bg-gray-50">
-  <!-- Desktop Sidebar -->
-  <aside [class.w-64]="sidebarOpen" [class.w-20]="!sidebarOpen"
-    class="hidden lg:flex flex-col bg-white border-r border-gray-200 transition-all duration-300">
-    <!-- Logo -->
-    <div class="h-16 flex items-center justify-center border-b border-gray-200 px-4">
-      <div *ngIf="sidebarOpen" class="flex items-center gap-2">
-        <div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-          <mat-icon class="text-white">apartment</mat-icon>
+<div class="min-h-screen bg-[#f8fafc]">
+  <!-- Header -->
+  <header class="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-100 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between py-5">
+        <!-- Logo -->
+        <div class="flex items-center gap-3 group cursor-pointer">
+          <div
+            class="w-12 h-12 bg-gradient-to-tr from-primary to-blue-500 rounded-xl flex items-center justify-center shadow-lg shadow-primary/20 group-hover:scale-105 transition-transform">
+            <mat-icon class="text-white">apartment</mat-icon>
+          </div>
+          <div class="hidden sm:block">
+            <h1
+              class="text-xl font-extrabold tracking-tight text-gray-900 group-hover:text-primary transition-colors">
+              ResiLink</h1>
+            <p class="text-[10px] font-bold uppercase tracking-wider text-gray-400">Admin Portal</p>
+          </div>
         </div>
-        <div>
-          <h1 class="text-lg font-bold text-gray-900">ResiLink</h1>
-          <p class="text-xs text-gray-500">Admin Portal</p>
+
+        <!-- Desktop Nav -->
+        <nav class="hidden md:flex items-center">
+          <div class="flex bg-gray-100/70 p-1 rounded-2xl">
+            <a *ngFor="let item of navItems" [routerLink]="item.route"
+              [class]="isActive(item.route) ? 'bg-white text-primary shadow-lg scale-105' : 'text-gray-500 hover:text-gray-900'"
+              class="flex items-center gap-2 px-5 py-2 rounded-xl font-bold text-sm transition-all duration-300 whitespace-nowrap">
+              <mat-icon class="scale-90">{{ item.icon }}</mat-icon>
+              {{ item.label }}
+              <span *ngIf="item.badge"
+                [class]="isActive(item.route) ? 'bg-primary/10 text-primary' : 'bg-gray-200 text-gray-600'"
+                class="text-[10px] font-black px-2 py-0.5 rounded-full ml-1">
+                {{ item.badge }}
+              </span>
+            </a>
+          </div>
+        </nav>
+
+        <!-- Actions -->
+        <div class="hidden md:flex items-center gap-4">
+          <div class="flex items-center bg-gray-100 rounded-full px-4 py-1.5">
+            <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse mr-2"></div>
+            <span class="text-xs font-semibold text-gray-600">System Online</span>
+          </div>
+
+          <div class="relative">
+            <button (click)="toggleNotifications()" class="relative p-2 hover:bg-gray-100 rounded-xl transition-colors">
+              <mat-icon class="text-gray-500">notifications_none</mat-icon>
+              <span *ngIf="unreadNotifications > 0" class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 border-2 border-white rounded-full"></span>
+            </button>
+            <div *ngIf="notificationsOpen" class="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 z-50">
+              <div class="p-4 border-b border-gray-50 bg-gray-50/50 flex justify-between items-center">
+                <h3 class="font-black text-gray-900">Notifications</h3>
+                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-tighter hover:text-primary cursor-pointer">Mark all read</span>
+              </div>
+              <div class="divide-y divide-gray-50 max-h-[300px] overflow-y-auto">
+                <div *ngFor="let note of mockNotifications" class="p-4 hover:bg-primary/[0.02] cursor-pointer transition-colors group relative">
+                  <div *ngIf="!note.read" class="absolute left-2 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-primary rounded-full"></div>
+                  <h4 class="text-sm font-black text-gray-900 mb-1 group-hover:text-primary transition-colors" [class.pl-4]="!note.read">{{ note.title }}</h4>
+                  <p class="text-xs text-gray-500 mb-2 truncate" [class.pl-4]="!note.read">{{ note.message }}</p>
+                  <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider" [class.pl-4]="!note.read">{{ note.time }}</p>
+                </div>
+              </div>
+              <div class="p-3 border-t border-gray-50 bg-gray-50/50 text-center">
+                <a class="text-xs font-black text-primary hover:underline cursor-pointer">View all notifications</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="h-8 w-px bg-gray-200"></div>
+
+          <button (click)="logout()"
+            class="flex items-center gap-2 px-4 py-2 text-sm font-bold text-gray-600 hover:text-red-600 hover:bg-red-50 transition-all rounded-lg group">
+            <mat-icon class="scale-90 group-hover:rotate-12 transition-transform">logout</mat-icon>
+            Logout
+          </button>
+        </div>
+
+        <!-- Mobile Menu Button -->
+        <div class="flex md:hidden items-center">
+          <button (click)="mobileMenuOpen = !mobileMenuOpen" class="p-2 hover:bg-gray-100 rounded-xl">
+            <mat-icon class="text-gray-600">{{ mobileMenuOpen ? 'close' : 'segment' }}</mat-icon>
+          </button>
         </div>
       </div>
-      <div *ngIf="!sidebarOpen" class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-        <mat-icon class="text-white">apartment</mat-icon>
+
+      <!-- Mobile Menu Dropdown -->
+      <div *ngIf="mobileMenuOpen"
+        class="md:hidden border-t border-gray-100 py-4 space-y-2 bg-white animate-in slide-in-from-top duration-300">
+        <a *ngFor="let item of navItems" [routerLink]="item.route" (click)="mobileMenuOpen = false"
+          [class]="isActive(item.route) ? 'bg-primary/5 text-primary' : 'text-gray-700 hover:bg-gray-50'"
+          class="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors text-sm font-bold">
+          <mat-icon class="scale-90">{{ item.icon }}</mat-icon>
+          {{ item.label }}
+          <span *ngIf="item.badge" class="ml-auto px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-black rounded-full">
+            {{ item.badge }}
+          </span>
+        </a>
+        <div class="border-t border-gray-50 pt-2 mt-2">
+          <button (click)="logout()"
+            class="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-red-50 transition-colors text-sm font-bold text-red-600">
+            <mat-icon class="scale-90">logout</mat-icon>
+            Logout
+          </button>
+        </div>
       </div>
     </div>
+  </header>
 
-    <!-- Navigation -->
-    <nav class="flex-1 px-3 py-4 overflow-y-auto">
-      <ul class="space-y-2">
-        <li *ngFor="let item of navItems">
-          <a [routerLink]="item.route" [class.bg-primary]="isActive(item.route)"
-            [class.text-white]="isActive(item.route)" [class.text-gray-700]="!isActive(item.route)"
-            [class.hover:bg-gray-100]="!isActive(item.route)"
-            class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors">
-            <mat-icon>{{ item.icon }}</mat-icon>
-            <span *ngIf="sidebarOpen" class="font-medium">{{ item.label }}</span>
-          </a>
-        </li>
-      </ul>
-    </nav>
-
-    <!-- Toggle Sidebar Button -->
-    <div class="p-3 border-t border-gray-200">
-      <button (click)="toggleSidebar()"
-        class="w-full flex items-center justify-center gap-2 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
-        <mat-icon>{{ sidebarOpen ? 'chevron_left' : 'chevron_right' }}</mat-icon>
-        <span *ngIf="sidebarOpen" class="text-sm">Collapse</span>
-      </button>
-    </div>
-  </aside>
-
-  <!-- Main Content Area -->
-  <div class="flex-1 flex flex-col overflow-hidden">
-    <!-- Top Header -->
-    <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 lg:px-6">
-      <!-- Mobile Menu Button -->
-      <div class="flex lg:hidden items-center">
-        <button (click)="toggleMobileMenu()" class="p-2 text-gray-600 hover:bg-gray-100 rounded-lg">
-          <mat-icon>menu</mat-icon>
-        </button>
-      </div>
-
-      <div class="flex-1"></div>
-
-      <!-- User Menu -->
-      <div class="flex items-center gap-4">
-        <div class="hidden sm:block text-right">
-          <p class="text-sm font-medium text-gray-900">{{ (authService.user$ | async)?.name }}</p>
-          <p class="text-xs text-gray-500">Administrator</p>
-        </div>
-        <button (click)="logout()"
-          class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
-          <mat-icon class="text-sm">logout</mat-icon>
-          <span class="hidden sm:inline">Logout</span>
-        </button>
-      </div>
-    </header>
-
-    <!-- Page Content -->
-    <main class="flex-1 overflow-y-auto p-4 lg:p-6">
-      <router-outlet></router-outlet>
-    </main>
-  </div>
-
-  <!-- Mobile Sidebar Overlay -->
-  <div *ngIf="mobileMenuOpen" (click)="toggleMobileMenu()" class="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden">
-  </div>
-
-  <!-- Mobile Sidebar -->
-  <aside [class.translate-x-0]="mobileMenuOpen" [class.-translate-x-full]="!mobileMenuOpen"
-    class="fixed inset-y-0 left-0 w-64 bg-white border-r border-gray-200 z-50 lg:hidden transition-transform duration-300">
-    <!-- Logo -->
-    <div class="h-16 flex items-center justify-between border-b border-gray-200 px-4">
-      <div class="flex items-center gap-2">
-        <div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-          <mat-icon class="text-white">apartment</mat-icon>
-        </div>
-        <div>
-          <h1 class="text-lg font-bold text-gray-900">ResiLink</h1>
-          <p class="text-xs text-gray-500">Admin Portal</p>
-        </div>
-      </div>
-      <button (click)="toggleMobileMenu()" class="p-2 text-gray-600 hover:bg-gray-100 rounded-lg">
-        <mat-icon>close</mat-icon>
-      </button>
-    </div>
-
-    <!-- Navigation -->
-    <nav class="px-3 py-4">
-      <ul class="space-y-2">
-        <li *ngFor="let item of navItems">
-          <a [routerLink]="item.route" (click)="toggleMobileMenu()" [class.bg-primary]="isActive(item.route)"
-            [class.text-white]="isActive(item.route)" [class.text-gray-700]="!isActive(item.route)"
-            [class.hover:bg-gray-100]="!isActive(item.route)"
-            class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors">
-            <mat-icon>{{ item.icon }}</mat-icon>
-            <span class="font-medium">{{ item.label }}</span>
-          </a>
-        </li>
-      </ul>
-    </nav>
-  </aside>
+  <!-- Main Content -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-32 md:pb-12">
+    <router-outlet></router-outlet>
+  </main>
 </div>

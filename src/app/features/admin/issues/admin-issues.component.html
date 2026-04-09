@@ -1,104 +1,157 @@
-<div>
-  <h1 class="text-2xl font-bold text-gray-900 mb-6">All Issues</h1>
+<div class="space-y-8 animate-in fade-in duration-500">
+  <!-- Page Header -->
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+    <div>
+      <h1 class="text-3xl font-black text-gray-900 tracking-tight">Issue Management</h1>
+      <p class="text-gray-500 font-medium mt-1">Manage, assign, and track all maintenance requests</p>
+    </div>
+    <div class="flex items-center gap-3">
+      <span class="px-4 py-2 bg-primary/10 text-primary text-xs font-black rounded-full">
+        {{ (issues$ | async)?.length || 0 }} Total Issues
+      </span>
+    </div>
+  </div>
 
-  <app-card>
-    <app-card-header>
-      <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-        <app-card-title>Issue Management</app-card-title>
-        <div class="flex gap-2">
-          <mat-form-field appearance="outline" class="w-64">
-            <mat-label>Search</mat-label>
-            <input matInput [(ngModel)]="searchQuery" placeholder="Search issues...">
-            <mat-icon matPrefix>search</mat-icon>
-          </mat-form-field>
-        </div>
-      </div>
-    </app-card-header>
+  <!-- Search and Filter Bar -->
+  <div class="flex flex-col md:flex-row gap-4">
+    <div class="relative flex-1 group">
+      <mat-icon
+        class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors">
+        search</mat-icon>
+      <input type="text" [(ngModel)]="searchQuery" (ngModelChange)="onSearch()"
+        placeholder="Search by title, resident, apartment or category..."
+        class="w-full pl-12 pr-4 py-4 bg-white border border-gray-100 rounded-2xl text-sm font-bold text-gray-900 focus:outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all shadow-sm shadow-gray-200/50">
+    </div>
 
-    <app-card-content>
-      <div class="overflow-x-auto">
-        <table class="w-full">
-          <thead>
-            <tr class="border-b border-gray-200">
-              <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">ID</th>
-              <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Title</th>
-              <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Resident</th>
-              <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Apartment</th>
-              <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Category</th>
-              <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Priority</th>
-              <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Status</th>
-              <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Assigned To</th>
-              <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Created</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              *ngFor="let issue of (issues$ | async)"
-              class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-              <td class="py-3 px-4 text-sm text-gray-600 font-mono">
-                {{ issue.id.substring(0, 8) }}
-              </td>
-              <td class="py-3 px-4">
-                <p class="text-sm font-medium text-gray-900 max-w-xs truncate">{{ issue.title }}</p>
-                <p class="text-xs text-gray-500 max-w-xs truncate">{{ issue.description }}</p>
-              </td>
-              <td class="py-3 px-4 text-sm text-gray-700">{{ issue.residentName }}</td>
-              <td class="py-3 px-4 text-sm text-gray-700">{{ issue.apartment }}</td>
-              <td class="py-3 px-4">
-                <span class="text-xs px-2 py-1 bg-gray-100 text-gray-700 rounded">
-                  {{ getCategoryLabel(issue.category) }}
-                </span>
-              </td>
-              <td class="py-3 px-4">
-                <mat-form-field appearance="outline" class="mat-form-field-sm">
-                  <mat-select
-                    [value]="issue.priority"
-                    (selectionChange)="updatePriority(issue, $event.value)">
-                    <mat-option value="low">Low</mat-option>
-                    <mat-option value="medium">Medium</mat-option>
-                    <mat-option value="high">High</mat-option>
-                    <mat-option value="urgent">Urgent</mat-option>
-                  </mat-select>
-                </mat-form-field>
-              </td>
-              <td class="py-3 px-4">
-                <mat-form-field appearance="outline" class="mat-form-field-sm">
-                  <mat-select
-                    [value]="issue.status"
-                    (selectionChange)="updateStatus(issue, $event.value)">
-                    <mat-option value="open">Open</mat-option>
-                    <mat-option value="in-progress">In Progress</mat-option>
-                    <mat-option value="resolved">Resolved</mat-option>
-                    <mat-option value="closed">Closed</mat-option>
-                  </mat-select>
-                </mat-form-field>
-              </td>
-              <td class="py-3 px-4">
-                <mat-form-field appearance="outline" class="mat-form-field-sm">
-                  <mat-select
-                    [value]="issue.assignedTo || ''"
-                    (selectionChange)="assignStaff(issue, $event.value)">
-                    <mat-option value="">Unassigned</mat-option>
-                    <mat-option *ngFor="let staff of (staff$ | async)" [value]="staff.id">
-                      {{ staff.name }}
-                    </mat-option>
-                  </mat-select>
-                </mat-form-field>
-              </td>
-              <td class="py-3 px-4 text-sm text-gray-600 whitespace-nowrap">
-                {{ formatDate(issue.createdAt) }}
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+    <div class="flex gap-2">
+      <select [(ngModel)]="filterStatus" (ngModelChange)="onSearch()"
+        class="pl-4 pr-10 py-4 bg-white border border-gray-100 rounded-2xl text-sm font-black text-gray-600 focus:outline-none focus:ring-4 focus:ring-primary/5 transition-all shadow-sm appearance-none cursor-pointer">
+        <option value="all">All Status</option>
+        <option value="open">Open</option>
+        <option value="in-progress">In Progress</option>
+        <option value="resolved">Resolved</option>
+        <option value="closed">Closed</option>
+      </select>
 
-      <!-- Empty State -->
-      <div *ngIf="(issues$ | async)?.length === 0" class="text-center py-12">
-        <mat-icon class="text-6xl text-gray-300 mb-4">inbox</mat-icon>
-        <h3 class="text-lg font-medium text-gray-900 mb-2">No issues found</h3>
-        <p class="text-gray-600">Issues will appear here once residents start submitting them.</p>
+      <select [(ngModel)]="filterPriority" (ngModelChange)="onSearch()"
+        class="pl-4 pr-10 py-4 bg-white border border-gray-100 rounded-2xl text-sm font-black text-gray-600 focus:outline-none focus:ring-4 focus:ring-primary/5 transition-all shadow-sm appearance-none cursor-pointer">
+        <option value="all">All Priority</option>
+        <option value="low">Low</option>
+        <option value="medium">Medium</option>
+        <option value="high">High</option>
+        <option value="urgent">Urgent</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Issues Table -->
+  <div class="bg-white rounded-[2rem] border border-gray-100 shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full">
+        <thead>
+          <tr class="border-b border-gray-100 bg-gray-50/50">
+            <th class="text-left py-4 px-6 text-[10px] font-black text-gray-400 uppercase tracking-wider">ID</th>
+            <th class="text-left py-4 px-6 text-[10px] font-black text-gray-400 uppercase tracking-wider">Issue</th>
+            <th class="text-left py-4 px-6 text-[10px] font-black text-gray-400 uppercase tracking-wider">Resident
+            </th>
+            <th class="text-left py-4 px-6 text-[10px] font-black text-gray-400 uppercase tracking-wider">Apartment
+            </th>
+            <th class="text-left py-4 px-6 text-[10px] font-black text-gray-400 uppercase tracking-wider">Category
+            </th>
+            <th class="text-left py-4 px-6 text-[10px] font-black text-gray-400 uppercase tracking-wider">Priority
+            </th>
+            <th class="text-left py-4 px-6 text-[10px] font-black text-gray-400 uppercase tracking-wider">Status</th>
+            <th class="text-left py-4 px-6 text-[10px] font-black text-gray-400 uppercase tracking-wider">Assigned To
+            </th>
+            <th class="text-left py-4 px-6 text-[10px] font-black text-gray-400 uppercase tracking-wider">Created</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let issue of filteredIssues"
+            class="border-b border-gray-50 hover:bg-primary/[0.02] transition-colors group cursor-pointer">
+            <td class="py-4 px-6">
+              <span class="text-[10px] uppercase font-black text-gray-300 tracking-tighter">{{
+                issue.id.substring(0, 8) }}</span>
+            </td>
+            <td class="py-4 px-6">
+              <div class="flex items-center gap-3">
+                <div
+                  class="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center text-gray-400 group-hover:bg-primary/5 group-hover:text-primary transition-colors flex-shrink-0">
+                  <mat-icon class="scale-90">{{ getCategoryIcon(issue.category) }}</mat-icon>
+                </div>
+                <div class="min-w-0">
+                  <p class="text-sm font-black text-gray-900 truncate max-w-[200px] group-hover:text-primary transition-colors">
+                    {{ issue.title }}</p>
+                  <p class="text-xs text-gray-400 truncate max-w-[200px]">{{ issue.description }}</p>
+                </div>
+              </div>
+            </td>
+            <td class="py-4 px-6">
+              <div class="flex items-center gap-2">
+                <div
+                  class="w-7 h-7 bg-gradient-to-tr from-primary to-blue-500 rounded-lg flex items-center justify-center text-white font-black text-[9px]">
+                  {{ issue.residentName.charAt(0) }}
+                </div>
+                <span class="text-sm font-bold text-gray-700">{{ issue.residentName }}</span>
+              </div>
+            </td>
+            <td class="py-4 px-6 text-sm font-bold text-gray-600">{{ issue.apartment }}</td>
+            <td class="py-4 px-6">
+              <span
+                class="text-[10px] px-3 py-1.5 bg-gray-100 text-gray-700 rounded-full font-black uppercase tracking-wider">
+                {{ getCategoryLabel(issue.category) }}
+              </span>
+            </td>
+            <td class="py-4 px-6">
+              <mat-form-field appearance="outline" class="mat-form-field-sm">
+                <mat-select [value]="issue.priority" (selectionChange)="updatePriority(issue, $event.value)">
+                  <mat-option value="low">Low</mat-option>
+                  <mat-option value="medium">Medium</mat-option>
+                  <mat-option value="high">High</mat-option>
+                  <mat-option value="urgent">Urgent</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </td>
+            <td class="py-4 px-6">
+              <mat-form-field appearance="outline" class="mat-form-field-sm">
+                <mat-select [value]="issue.status" (selectionChange)="updateStatus(issue, $event.value)">
+                  <mat-option value="open">Open</mat-option>
+                  <mat-option value="in-progress">In Progress</mat-option>
+                  <mat-option value="resolved">Resolved</mat-option>
+                  <mat-option value="closed">Closed</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </td>
+            <td class="py-4 px-6">
+              <mat-form-field appearance="outline" class="mat-form-field-sm">
+                <mat-select [value]="issue.assignedTo || ''" (selectionChange)="assignStaff(issue, $event.value)">
+                  <mat-option value="">Unassigned</mat-option>
+                  <mat-option *ngFor="let staff of (staff$ | async)" [value]="staff.id">
+                    {{ staff.name }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </td>
+            <td class="py-4 px-6">
+              <span class="text-xs font-bold text-gray-400 whitespace-nowrap">{{ formatDate(issue.createdAt) }}</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="filteredIssues.length === 0"
+      class="py-32 text-center">
+      <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
+        <mat-icon class="text-gray-300 text-4xl">search_off</mat-icon>
       </div>
-    </app-card-content>
-  </app-card>
+      <h3 class="text-xl font-black text-gray-900 mb-2">No issues found</h3>
+      <p class="text-gray-400 font-bold max-w-xs mx-auto">Try adjusting your search or filter criteria.</p>
+      <button (click)="searchQuery = ''; filterStatus = 'all'; filterPriority = 'all'; onSearch()"
+        class="mt-6 text-primary font-black text-sm px-6 py-2 bg-primary/5 rounded-xl hover:bg-primary/10 transition-colors">
+        Clear Filters
+      </button>
+    </div>
+  </div>
 </div>

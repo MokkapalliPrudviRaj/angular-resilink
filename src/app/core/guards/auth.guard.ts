@@ -16,6 +16,11 @@ export const authGuard: CanActivateFn = (route, state) => {
   const requiredRole = route.data['role'] as 'resident' | 'admin' | undefined;
   
   if (requiredRole && user.role !== requiredRole) {
+    // If user is admin and page needs resident, allow it
+    if (user.role === 'admin' && requiredRole === 'resident') {
+      return true;
+    }
+    
     const path = user.role === 'admin' ? '/admin' : '/dashboard';
     router.navigate([path]);
     return false;

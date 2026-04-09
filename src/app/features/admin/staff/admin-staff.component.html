@@ -1,63 +1,166 @@
-<div>
-  <div class="flex items-center justify-between mb-6">
-    <h1 class="text-2xl font-bold text-gray-900">Staff Management</h1>
-    <app-button (clicked)="addStaff()">
-      <mat-icon class="mr-2 text-sm">add</mat-icon>
-      Add Staff
-    </app-button>
+<div class="space-y-8 animate-in fade-in duration-500">
+  <!-- Page Header -->
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+    <div>
+      <h1 class="text-3xl font-black text-gray-900 tracking-tight">Staff Management</h1>
+      <p class="text-gray-500 font-medium mt-1">Manage your maintenance team and track workloads</p>
+    </div>
+    <button (click)="addStaff()"
+      class="flex items-center gap-2 bg-primary text-white px-8 py-3 rounded-2xl font-black shadow-lg shadow-primary/30 hover:shadow-primary/40 hover:-translate-y-1 transition-all active:scale-95">
+      <mat-icon>person_add</mat-icon>
+      Add Staff Member
+    </button>
   </div>
 
+  <!-- Stats Row -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm group hover:shadow-md transition-all">
+      <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">Total Staff</p>
+      <p class="text-3xl font-black text-gray-900 group-hover:scale-105 transition-transform origin-left">
+        {{ (staff$ | async)?.length || 0 }}
+      </p>
+    </div>
+    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm group hover:shadow-md transition-all">
+      <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">Active Tasks</p>
+      <p class="text-3xl font-black text-primary group-hover:scale-105 transition-transform origin-left">
+        {{ totalActiveTasks }}
+      </p>
+    </div>
+    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm group hover:shadow-md transition-all">
+      <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">Available</p>
+      <p class="text-3xl font-black text-green-600 group-hover:scale-105 transition-transform origin-left">
+        {{ availableStaff }}
+      </p>
+    </div>
+    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm group hover:shadow-md transition-all">
+      <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">Avg. Load</p>
+      <p class="text-3xl font-black text-indigo-600 group-hover:scale-105 transition-transform origin-left">
+        {{ avgLoad }}
+      </p>
+    </div>
+  </div>
+
+  <!-- Staff Grid -->
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    <app-card *ngFor="let member of (staff$ | async)" class="hover:shadow-md transition-shadow">
-      <app-card-content>
-        <div class="flex items-start gap-4">
-          <!-- Avatar -->
-          <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-            <mat-icon class="text-primary">person</mat-icon>
-          </div>
-
-          <!-- Info -->
-          <div class="flex-1 min-w-0">
-            <h3 class="font-semibold text-lg text-gray-900 truncate">{{ member.name }}</h3>
-            <p class="text-sm text-gray-600 mb-3">{{ member.role }}</p>
-
-            <div class="space-y-2">
-              <div class="flex items-center gap-2 text-sm text-gray-600">
-                <mat-icon class="text-sm">email</mat-icon>
-                <span class="truncate">{{ member.email }}</span>
-              </div>
-              <div class="flex items-center gap-2 text-sm text-gray-600">
-                <mat-icon class="text-sm">phone</mat-icon>
-                <span>{{ member.phone }}</span>
-              </div>
-              <div class="flex items-center gap-2 text-sm">
-                <mat-icon class="text-sm text-primary">assignment</mat-icon>
-                <span class="text-gray-900 font-medium">{{ member.activeIssues }} active issues</span>
-              </div>
-            </div>
-          </div>
+    <div *ngFor="let member of (staff$ | async)"
+      class="group bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-gray-200/50 hover:-translate-y-1 transition-all">
+      <div class="flex items-start gap-4 mb-6">
+        <!-- Avatar -->
+        <div
+          class="w-14 h-14 bg-gradient-to-tr from-primary to-blue-500 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform">
+          <span class="text-white font-black text-lg">{{ member.name.charAt(0) }}</span>
         </div>
 
-        <!-- Actions -->
-        <div class="flex gap-2 mt-4 pt-4 border-t border-gray-200">
-          <app-button variant="outline" size="sm" class="flex-1">
-            Edit
-          </app-button>
-          <app-button variant="ghost" size="sm">
-            <mat-icon class="text-sm">more_vert</mat-icon>
-          </app-button>
+        <!-- Info -->
+        <div class="flex-1 min-w-0">
+          <h3 class="font-black text-lg text-gray-900 truncate group-hover:text-primary transition-colors">
+            {{ member.name }}
+          </h3>
+          <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">{{ member.role }}</p>
         </div>
-      </app-card-content>
-    </app-card>
+
+        <!-- Workload Badge -->
+        <span class="text-[10px] font-black px-3 py-1.5 rounded-full flex-shrink-0"
+          [class]="member.activeIssues > 3 ? 'bg-red-50 text-red-600' : member.activeIssues > 1 ? 'bg-amber-50 text-amber-600' : 'bg-green-50 text-green-600'">
+          {{ member.activeIssues }} active
+        </span>
+      </div>
+
+      <!-- Contact Details -->
+      <div class="space-y-3 mb-6">
+        <div class="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 transition-colors">
+          <div class="w-8 h-8 bg-gray-50 rounded-lg flex items-center justify-center">
+            <mat-icon class="text-gray-400 scale-75">email</mat-icon>
+          </div>
+          <span class="text-sm font-bold text-gray-600 truncate">{{ member.email }}</span>
+        </div>
+        <div class="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 transition-colors">
+          <div class="w-8 h-8 bg-gray-50 rounded-lg flex items-center justify-center">
+            <mat-icon class="text-gray-400 scale-75">phone</mat-icon>
+          </div>
+          <span class="text-sm font-bold text-gray-600">{{ member.phone }}</span>
+        </div>
+      </div>
+
+      <!-- Workload Bar -->
+      <div class="mb-6">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-[10px] font-bold text-gray-400 uppercase">Workload</span>
+          <span class="text-[10px] font-black"
+            [class]="member.activeIssues > 3 ? 'text-red-600' : member.activeIssues > 1 ? 'text-amber-600' : 'text-green-600'">
+            {{ member.activeIssues > 3 ? 'Heavy' : member.activeIssues > 1 ? 'Moderate' : 'Light' }}
+          </span>
+        </div>
+        <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
+          <div class="h-full rounded-full transition-all duration-500"
+            [class]="member.activeIssues > 3 ? 'bg-gradient-to-r from-red-400 to-red-600' : member.activeIssues > 1 ? 'bg-gradient-to-r from-amber-400 to-amber-600' : 'bg-gradient-to-r from-green-400 to-green-600'"
+            [style.width.%]="Math.min((member.activeIssues / 6) * 100, 100)"></div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex gap-2 pt-4 border-t border-gray-50">
+        <button (click)="editStaff(member)"
+          class="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-50 text-gray-700 rounded-xl font-bold text-sm hover:bg-gray-100 transition-colors">
+          <mat-icon class="scale-75">edit</mat-icon>
+          Edit
+        </button>
+        <button (click)="deleteStaff(member.id)"
+          class="flex items-center justify-center px-3 py-2.5 bg-gray-50 text-gray-400 rounded-xl hover:bg-red-50 hover:text-red-500 transition-colors">
+          <mat-icon class="scale-90">delete</mat-icon>
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- Empty State -->
-  <div *ngIf="(staff$ | async)?.length === 0" class="text-center py-12">
-    <mat-icon class="text-6xl text-gray-300 mb-4">people</mat-icon>
-    <h3 class="text-lg font-medium text-gray-900 mb-2">No staff members yet</h3>
-    <p class="text-gray-600 mb-4">Add staff members to manage maintenance issues.</p>
-    <app-button (clicked)="addStaff()">
+  <div *ngIf="(staff$ | async)?.length === 0"
+    class="py-32 bg-white rounded-[2rem] border border-dashed border-gray-200 text-center">
+    <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
+      <mat-icon class="text-gray-300 text-4xl">groups</mat-icon>
+    </div>
+    <h3 class="text-xl font-black text-gray-900 mb-2">No staff members yet</h3>
+    <p class="text-gray-400 font-bold max-w-xs mx-auto mb-6">Add your maintenance staff to start managing issue
+      assignments.</p>
+    <button (click)="addStaff()"
+      class="bg-primary text-white px-8 py-3 rounded-2xl font-black shadow-lg shadow-primary/30 hover:shadow-primary/40 transition-all">
       Add Your First Staff Member
-    </app-button>
+    </button>
+  </div>
+
+  <!-- Add/Edit Staff Modal Overlay -->
+  <div *ngIf="showAddForm" class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-300">
+    <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-md overflow-hidden animate-in slide-in-from-bottom-8 duration-500">
+      <div class="px-8 py-6 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">
+        <h3 class="text-xl font-black text-gray-900">{{ isEdit ? 'Edit Staff Member' : 'Add New Staff' }}</h3>
+        <button (click)="cancelAdd()" class="flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-200 transition-colors text-gray-500">
+          <mat-icon class="scale-90">close</mat-icon>
+        </button>
+      </div>
+      <div class="p-8 space-y-6">
+        <div>
+          <label class="block text-[10px] font-black text-gray-400 uppercase tracking-wider mb-2">Full Name</label>
+          <input type="text" [(ngModel)]="newStaff.name" placeholder="John Doe" class="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-900 focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all">
+        </div>
+        <div>
+          <label class="block text-[10px] font-black text-gray-400 uppercase tracking-wider mb-2">Role</label>
+          <input type="text" [(ngModel)]="newStaff.role" placeholder="e.g. Plumber, Electrician" class="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-900 focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all">
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-wider mb-2">Email</label>
+            <input type="email" [(ngModel)]="newStaff.email" placeholder="john@example.com" class="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-900 focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all">
+          </div>
+          <div>
+            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-wider mb-2">Phone</label>
+            <input type="tel" [(ngModel)]="newStaff.phone" placeholder="+1234567890" class="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-900 focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all">
+          </div>
+        </div>
+      </div>
+      <div class="px-8 py-6 bg-gray-50 flex gap-4">
+        <button (click)="cancelAdd()" class="flex-1 px-6 py-3 rounded-xl font-bold text-gray-600 bg-white border border-gray-200 hover:bg-gray-50 hover:text-gray-900 transition-colors shadow-sm">Cancel</button>
+        <button (click)="submitStaff()" [disabled]="!newStaff.name || !newStaff.role" class="flex-1 px-6 py-3 rounded-xl font-black text-white bg-primary disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-primary/30 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all">{{ isEdit ? 'Save Changes' : 'Add Member' }}</button>
+      </div>
+    </div>
   </div>
 </div>

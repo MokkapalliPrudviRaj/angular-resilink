@@ -6,8 +6,6 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { Observable } from 'rxjs';
-import { CardComponent, CardHeaderComponent, CardTitleComponent, CardContentComponent } from '../../../shared/components/card/card.component';
-import { ButtonComponent } from '../../../shared/components/button/button.component';
 import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge.component';
 import { PriorityBadgeComponent } from '../../../shared/components/priority-badge/priority-badge.component';
 import { IssueService } from '../../../core/services/issue.service';
@@ -27,11 +25,7 @@ import { categoryLabels } from '../../../core/data/mock-data';
     MatSelectModule,
     MatInputModule,
     MatFormFieldModule,
-    CardComponent,
-    CardHeaderComponent,
-    CardTitleComponent,
-    CardContentComponent,
-    // ButtonComponent,
+    MatFormFieldModule,
   ],
   templateUrl: './admin-issues.component.html',
   styleUrls: ['./admin-issues.component.scss']
@@ -40,8 +34,12 @@ export class AdminIssuesComponent implements OnInit {
   issues$!: Observable<Issue[]>;
   staff$!: Observable<Staff[]>;
   categoryLabels = categoryLabels;
+  allIssues: Issue[] = [];
+  filteredIssues: Issue[] = [];
 
   searchQuery = '';
+  filterStatus = 'all';
+  filterPriority = 'all';
 
   constructor(
     private issueService: IssueService,
@@ -56,14 +54,54 @@ export class AdminIssuesComponent implements OnInit {
   loadData(): void {
     this.issues$ = this.issueService.getIssues();
     this.staff$ = this.staffService.getStaff();
+
+    this.issues$.subscribe(issues => {
+      this.allIssues = issues;
+      this.onSearch();
+    });
+  }
+
+  onSearch(): void {
+    this.filteredIssues = this.allIssues.filter(issue => {
+      const matchesSearch = !this.searchQuery ||
+        issue.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+        issue.description?.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+        issue.residentName?.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+        issue.apartment?.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+        issue.category?.toLowerCase().includes(this.searchQuery.toLowerCase());
+
+      const matchesStatus = this.filterStatus === 'all' || issue.status === this.filterStatus;
+      const matchesPriority = this.filterPriority === 'all' || issue.priority === this.filterPriority;
+
+      return matchesSearch && matchesStatus && matchesPriority;
+    });
   }
 
   formatDate(date: string): string {
-    return formatDistanceToNow(new Date(date), { addSuffix: true });
+    if (!date) return 'just now';
+    try {
+      return formatDistanceToNow(new Date(date), { addSuffix: true });
+    } catch (e) {
+      return 'just now';
+    }
   }
 
   getCategoryLabel(category: string): string {
     return this.categoryLabels[category as keyof typeof categoryLabels] || category;
+  }
+
+  getCategoryIcon(category: string): string {
+    const iconMap: Record<string, string> = {
+      'plumbing': 'water_drop',
+      'electrical': 'bolt',
+      'hvac': 'ac_unit',
+      'structural': 'foundation',
+      'pest': 'pest_control',
+      'cleaning': 'cleaning_services',
+      'security': 'security',
+      'appliance': 'kitchen'
+    };
+    return iconMap[category?.toLowerCase()] || 'build';
   }
 
   getStaffName(staffId: string | undefined, staffList: Staff[]): string {

@@ -1,132 +1,473 @@
-<div>
-  <h1 class="text-2xl font-bold text-gray-900 mb-6">Dashboard Overview</h1>
+<div class="space-y-8 animate-in fade-in duration-500">
+  <!-- Welcome Banner -->
+  <div class="relative overflow-hidden rounded-3xl group">
+    <div class="absolute inset-0 bg-gradient-to-r from-primary via-blue-700 to-indigo-900"></div>
+    <div class="absolute -right-20 -top-20 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
+    <div class="absolute -left-20 -bottom-20 w-60 h-60 bg-blue-400/20 rounded-full blur-3xl"></div>
 
-  <!-- Stats Cards -->
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
-    <!-- Total Issues -->
-    <app-card class="hover:shadow-md transition-shadow">
-      <app-card-content>
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-sm text-gray-600 mb-1">Total Issues</p>
-            <h3 class="text-3xl font-bold text-gray-900">{{ stats.total }}</h3>
+    <div class="relative z-10 p-8 md:p-12">
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-10">
+        <div class="flex-1 min-w-0 max-w-2xl">
+          <p class="text-blue-200 font-bold tracking-widest uppercase text-[10px] mb-3">Admin Command Center</p>
+          <h2 class="text-3xl md:text-5xl font-black text-white mb-4 leading-tight">
+            Welcome back, Admin!
+          </h2>
+          <p class="text-lg text-blue-100/90 font-medium">
+            Monitor all property issues, manage staff assignments, and keep operations running smoothly.
+          </p>
+        </div>
+
+        <!-- Quick Stats Cards in Welcome -->
+        <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full lg:w-auto shrink-0">
+          <div
+            class="bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/20 hover:bg-white/15 transition-all group/stat">
+            <p class="text-[10px] font-bold text-blue-200 uppercase mb-2 tracking-tighter">Total</p>
+            <div class="flex items-baseline gap-1">
+              <p class="text-3xl font-black text-white group-hover/stat:scale-110 transition-transform origin-left">
+                {{ stats.total }}</p>
+            </div>
           </div>
-          <div class="w-12 h-12 bg-purple-50 rounded-lg flex items-center justify-center">
-            <mat-icon class="text-primary">inbox</mat-icon>
+
+          <div
+            class="bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/20 hover:bg-white/15 transition-all group/stat">
+            <p class="text-[10px] font-bold text-blue-200 uppercase mb-2 tracking-tighter">Open</p>
+            <div class="flex items-baseline gap-1">
+              <p class="text-3xl font-black text-white group-hover/stat:scale-110 transition-transform origin-left">
+                {{ stats.open }}</p>
+              <div class="w-1.5 h-1.5 bg-amber-400 rounded-full animate-pulse"></div>
+            </div>
+          </div>
+
+          <div
+            class="bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/20 hover:bg-white/15 transition-all group/stat">
+            <p class="text-[10px] font-bold text-blue-200 uppercase mb-2 tracking-tighter">In Progress</p>
+            <div class="flex items-baseline gap-1">
+              <p class="text-3xl font-black text-white group-hover/stat:scale-110 transition-transform origin-left">
+                {{ stats.inProgress }}</p>
+              <div class="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse"></div>
+            </div>
+          </div>
+
+          <div
+            class="bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/20 hover:bg-white/15 transition-all group/stat">
+            <p class="text-[10px] font-bold text-blue-200 uppercase mb-2 tracking-tighter">Resolved</p>
+            <p class="text-3xl font-black text-white group-hover/stat:scale-110 transition-transform origin-left">
+              {{ stats.resolved }}</p>
+          </div>
+
+          <div
+            class="bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/20 hover:bg-white/15 transition-all group/stat">
+            <p class="text-[10px] font-bold text-blue-200 uppercase mb-2 tracking-tighter">Urgent</p>
+            <div class="flex items-center gap-2">
+              <p class="text-3xl font-black text-white group-hover/stat:scale-110 transition-transform origin-left">
+                {{ stats.urgent }}</p>
+              <span *ngIf="stats.urgent > 0"
+                class="px-1.5 py-0.5 bg-red-500 text-[8px] font-black rounded-md text-white animate-pulse">ALERT</span>
+            </div>
+          </div>
+
+          <div
+            class="bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/20 hover:bg-white/15 transition-all group/stat">
+            <p class="text-[10px] font-bold text-blue-200 uppercase mb-2 tracking-tighter">Resolution</p>
+            <p class="text-3xl font-black text-white group-hover/stat:scale-110 transition-transform origin-left">
+              {{ stats.total > 0 ? ((stats.resolved / stats.total) * 100).toFixed(0) : 0 }}<span
+                class="text-lg text-blue-200">%</span></p>
           </div>
         </div>
-      </app-card-content>
-    </app-card>
-
-    <!-- Open Issues -->
-    <app-card class="hover:shadow-md transition-shadow">
-      <app-card-content>
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-sm text-gray-600 mb-1">Open</p>
-            <h3 class="text-3xl font-bold text-blue-600">{{ stats.open }}</h3>
-          </div>
-          <div class="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center">
-            <mat-icon class="text-blue-600">error_outline</mat-icon>
-          </div>
-        </div>
-      </app-card-content>
-    </app-card>
-
-    <!-- In Progress -->
-    <app-card class="hover:shadow-md transition-shadow">
-      <app-card-content>
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-sm text-gray-600 mb-1">In Progress</p>
-            <h3 class="text-3xl font-bold text-amber-600">{{ stats.inProgress }}</h3>
-          </div>
-          <div class="w-12 h-12 bg-amber-50 rounded-lg flex items-center justify-center">
-            <mat-icon class="text-amber-600">schedule</mat-icon>
-          </div>
-        </div>
-      </app-card-content>
-    </app-card>
-
-    <!-- Resolved -->
-    <app-card class="hover:shadow-md transition-shadow">
-      <app-card-content>
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-sm text-gray-600 mb-1">Resolved</p>
-            <h3 class="text-3xl font-bold text-green-600">{{ stats.resolved }}</h3>
-          </div>
-          <div class="w-12 h-12 bg-green-50 rounded-lg flex items-center justify-center">
-            <mat-icon class="text-green-600">check_circle</mat-icon>
-          </div>
-        </div>
-      </app-card-content>
-    </app-card>
-
-    <!-- Urgent -->
-    <app-card class="hover:shadow-md transition-shadow">
-      <app-card-content>
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-sm text-gray-600 mb-1">Urgent</p>
-            <h3 class="text-3xl font-bold text-red-600">{{ stats.urgent }}</h3>
-          </div>
-          <div class="w-12 h-12 bg-red-50 rounded-lg flex items-center justify-center">
-            <mat-icon class="text-red-600">warning</mat-icon>
-          </div>
-        </div>
-      </app-card-content>
-    </app-card>
+      </div>
+    </div>
   </div>
 
-  <!-- Recent Issues -->
-  <app-card>
-    <app-card-header>
-      <app-card-title>Recent Issues</app-card-title>
-    </app-card-header>
-    <app-card-content>
-      <div class="overflow-x-auto">
-        <table class="w-full">
-          <thead>
-            <tr class="border-b border-gray-200">
-              <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">ID</th>
-              <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Title</th>
-              <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Resident</th>
-              <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Apartment</th>
-              <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Priority</th>
-              <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Status</th>
-              <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Created</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              *ngFor="let issue of (recentIssues$ | async)"
-              class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-              <td class="py-3 px-4 text-sm text-gray-600">{{ issue.id.substring(0, 8) }}</td>
-              <td class="py-3 px-4">
-                <p class="text-sm font-medium text-gray-900">{{ issue.title }}</p>
-                <p class="text-xs text-gray-500">{{ issue.category }}</p>
-              </td>
-              <td class="py-3 px-4 text-sm text-gray-700">{{ issue.residentName }}</td>
-              <td class="py-3 px-4 text-sm text-gray-700">{{ issue.apartment }}</td>
-              <td class="py-3 px-4">
-                <app-priority-badge [priority]="issue.priority"></app-priority-badge>
-              </td>
-              <td class="py-3 px-4">
-                <app-status-badge [status]="issue.status"></app-status-badge>
-              </td>
-              <td class="py-3 px-4 text-sm text-gray-600">{{ formatDate(issue.createdAt) }}</td>
-            </tr>
-          </tbody>
-        </table>
+  <!-- Navigation Tabs -->
+  <div class="flex items-center justify-between gap-4 overflow-x-auto pb-2 scrollbar-hide">
+    <div class="flex bg-gray-200/50 p-1.5 rounded-2xl backdrop-blur-sm">
+      <button
+        *ngFor="let tab of [{id:0, label:'Overview', icon:'grid_view'}, {id:1, label:'Analytics', icon:'auto_graph'}, {id:2, label:'Activity', icon:'update'}]"
+        (click)="activeTabIndex = tab.id" [class.bg-white]="activeTabIndex === tab.id"
+        [class.text-primary]="activeTabIndex === tab.id" [class.shadow-xl]="activeTabIndex === tab.id"
+        [class.scale-105]="activeTabIndex === tab.id"
+        class="flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-sm transition-all duration-300 whitespace-nowrap hover:text-gray-900">
+        <mat-icon class="scale-90">{{ tab.icon }}</mat-icon>
+        {{ tab.label }}
+      </button>
+    </div>
+
+    <a routerLink="/admin/issues"
+      class="hidden md:flex items-center gap-2 bg-primary text-white px-8 py-3 rounded-2xl font-black shadow-lg shadow-primary/30 hover:shadow-primary/40 hover:-translate-y-1 transition-all active:scale-95">
+      <mat-icon>assignment</mat-icon>
+      Manage Issues
+    </a>
+  </div>
+
+  <!-- Overview Tab -->
+  <div *ngIf="activeTabIndex === 0" class="space-y-8 animate-in fade-in duration-500">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <!-- Main Left Column -->
+      <div class="lg:col-span-8 space-y-8">
+        <!-- Quick Action Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <a routerLink="/admin/issues"
+            class="group relative overflow-hidden bg-white p-8 rounded-3xl border border-gray-100 shadow-sm hover:shadow-2xl hover:shadow-primary/10 transition-all cursor-pointer">
+            <div
+              class="absolute -right-8 -bottom-8 w-32 h-32 bg-primary/5 rounded-full group-hover:scale-150 transition-transform duration-700">
+            </div>
+            <div
+              class="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-primary transition-colors">
+              <mat-icon class="text-primary group-hover:text-white transition-colors text-3xl">assignment</mat-icon>
+            </div>
+            <h3 class="text-xl font-black text-gray-900 mb-2">Manage Issues</h3>
+            <p class="text-gray-500 font-medium">Review, assign, and update maintenance requests across all
+              properties.</p>
+            <div class="mt-6 flex items-center gap-2 text-primary font-bold text-sm">
+              View all issues <mat-icon class="scale-90 animate-bounce-x">arrow_forward</mat-icon>
+            </div>
+          </a>
+
+          <a routerLink="/admin/staff"
+            class="group relative overflow-hidden bg-white p-8 rounded-3xl border border-gray-100 shadow-sm hover:shadow-2xl hover:shadow-indigo/10 transition-all cursor-pointer">
+            <div
+              class="absolute -right-8 -bottom-8 w-32 h-32 bg-indigo-50/50 rounded-full group-hover:scale-150 transition-transform duration-700">
+            </div>
+            <div
+              class="w-14 h-14 bg-indigo-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-indigo-600 transition-colors">
+              <mat-icon class="text-indigo-600 group-hover:text-white transition-colors text-3xl">groups</mat-icon>
+            </div>
+            <h3 class="text-xl font-black text-gray-900 mb-2">Staff Management</h3>
+            <p class="text-gray-500 font-medium">Monitor staff workloads, assign tasks, and manage your maintenance
+              team.</p>
+            <div class="mt-6 flex items-center gap-2 text-indigo-600 font-bold text-sm">
+              Manage staff <mat-icon class="scale-90">arrow_forward</mat-icon>
+            </div>
+          </a>
+        </div>
+
+        <!-- Recent Issues Feed -->
+        <div class="bg-white rounded-[2rem] border border-gray-100 shadow-sm overflow-hidden">
+          <div class="px-8 py-6 border-b border-gray-50 flex items-center justify-between bg-gray-50/30">
+            <h3 class="text-lg font-black text-gray-900">Live Issue Feed</h3>
+            <span
+              class="px-3 py-1 bg-primary/10 text-primary text-[10px] font-black uppercase rounded-full">Recent
+              Updates</span>
+          </div>
+
+          <div class="p-0">
+            <div *ngIf="recentIssues.length === 0" class="py-20 text-center">
+              <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                <mat-icon class="text-gray-300 text-4xl">inbox</mat-icon>
+              </div>
+              <p class="text-gray-400 font-bold">No issues reported yet</p>
+              <p class="text-gray-300 text-sm mt-1">Issues will appear here when residents submit them.</p>
+            </div>
+
+            <div *ngIf="recentIssues.length > 0" class="divide-y divide-gray-50">
+              <div *ngFor="let issue of recentIssues"
+                class="group flex items-center gap-6 p-6 hover:bg-primary/[0.02] cursor-pointer transition-all">
+                <div
+                  class="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center text-gray-400 group-hover:scale-110 group-hover:bg-white group-hover:shadow-md transition-all">
+                  <mat-icon>{{ getCategoryIcon(issue.category) }}</mat-icon>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-3 mb-1">
+                    <h4 class="font-black text-gray-900 truncate">{{ issue.title }}</h4>
+                    <app-priority-badge [priority]="issue.priority"></app-priority-badge>
+                  </div>
+                  <div class="flex items-center gap-3 text-xs font-bold text-gray-400">
+                    <span class="uppercase tracking-wider">{{ issue.category }}</span>
+                    <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
+                    <span>{{ issue.residentName }}</span>
+                    <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
+                    <span>{{ issue.apartment }}</span>
+                    <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
+                    <span>{{ formatDate(issue.createdAt) }}</span>
+                  </div>
+                </div>
+                <div class="text-right flex flex-col items-end gap-2">
+                  <app-status-badge [status]="issue.status"></app-status-badge>
+                  <mat-icon class="text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity">chevron_right
+                  </mat-icon>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="recentIssues.length > 0" class="p-4 bg-gray-50/50 text-center border-t border-gray-50">
+            <a routerLink="/admin/issues" class="text-sm font-black text-primary hover:underline">View All Issues
+              &rarr;</a>
+          </div>
+        </div>
       </div>
 
-      <!-- Empty State -->
-      <div *ngIf="(recentIssues$ | async)?.length === 0" class="text-center py-12">
-        <mat-icon class="text-6xl text-gray-300 mb-4">inbox</mat-icon>
-        <h3 class="text-lg font-medium text-gray-900 mb-2">No issues yet</h3>
-        <p class="text-gray-600">Issues will appear here once residents start submitting them.</p>
+      <!-- Right Sidebar -->
+      <div class="lg:col-span-4 space-y-8">
+        <!-- Category Distribution Chart -->
+        <div class="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm relative overflow-hidden">
+          <div class="relative z-10">
+            <h3 class="text-lg font-black text-gray-900 mb-6 flex items-center gap-2">
+              <div class="w-2 h-6 bg-primary rounded-full"></div>
+              Category Breakdown
+            </h3>
+
+            <div *ngIf="categoryData.length === 0" class="py-12 text-center">
+              <mat-icon class="text-gray-200 text-6xl">pie_chart</mat-icon>
+              <p class="text-gray-400 font-bold mt-2">No data recorded</p>
+            </div>
+
+            <div *ngIf="categoryData.length > 0" class="space-y-8">
+              <div class="h-48 flex justify-center">
+                <ngx-charts-pie-chart [results]="categoryData" [labels]="false" [doughnut]="true" [arcWidth]="0.35"
+                  [scheme]="chartColors" [animations]="true">
+                </ngx-charts-pie-chart>
+              </div>
+
+              <div class="space-y-3">
+                <div *ngFor="let item of categoryData.slice(0, 5); let i = index"
+                  class="flex items-center justify-between p-3 rounded-2xl hover:bg-gray-100 transition-colors">
+                  <div class="flex items-center gap-3">
+                    <div class="w-2 h-2 rounded-full"
+                      [style.background-color]="['#5048e5', '#818cf8', '#a5b4fc', '#c7d2fe', '#e0e7ff'][i]"></div>
+                    <span class="text-sm font-bold text-gray-700 capitalize">{{ item.name }}</span>
+                  </div>
+                  <span class="text-xs font-black bg-gray-100 px-2 py-1 rounded-lg">{{ item.value }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Staff Workload Card -->
+        <div class="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm">
+          <h3 class="text-lg font-black text-gray-900 mb-6 flex items-center gap-2">
+            <div class="w-2 h-6 bg-indigo-500 rounded-full"></div>
+            Staff Workload
+          </h3>
+
+          <div *ngIf="staffMembers.length === 0" class="py-8 text-center">
+            <mat-icon class="text-gray-200 text-5xl">groups</mat-icon>
+            <p class="text-gray-400 font-bold mt-2">No staff data</p>
+          </div>
+
+          <div class="space-y-4">
+            <div *ngFor="let member of staffMembers.slice(0, 4)"
+              class="flex items-center gap-4 p-3 rounded-2xl hover:bg-gray-50 transition-colors group">
+              <div
+                class="w-10 h-10 bg-gradient-to-tr from-indigo-500 to-primary rounded-xl flex items-center justify-center text-white font-black text-xs shadow-md">
+                {{ member.name.charAt(0) }}
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-bold text-gray-900 truncate">{{ member.name }}</p>
+                <p class="text-[10px] font-bold text-gray-400 uppercase">{{ member.role }}</p>
+              </div>
+              <div class="text-right">
+                <span class="text-xs font-black px-2.5 py-1 rounded-full"
+                  [class]="member.activeIssues > 3 ? 'bg-red-50 text-red-600' : member.activeIssues > 1 ? 'bg-amber-50 text-amber-600' : 'bg-green-50 text-green-600'">
+                  {{ member.activeIssues }} tasks
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <a routerLink="/admin/staff"
+            class="block mt-6 text-center text-sm font-black text-primary hover:underline">View Full Team
+            &rarr;</a>
+        </div>
+
+        <!-- System Health Card -->
+        <div class="bg-indigo-900 p-8 rounded-[2rem] text-white relative overflow-hidden group">
+          <div
+            class="absolute -right-10 -bottom-10 w-40 h-40 bg-white/10 rounded-full blur-2xl group-hover:scale-125 transition-transform duration-500">
+          </div>
+          <h3 class="text-xl font-black mb-2 flex items-center gap-2">
+            <mat-icon class="text-yellow-400">insights</mat-icon>
+            System Health
+          </h3>
+          <p class="text-indigo-200 font-medium mb-6 text-sm">All systems operational. Average response time is within
+            normal limits.</p>
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-indigo-300">Resolution Rate</span>
+              <span class="text-xs font-black text-white">{{ stats.total > 0 ? ((stats.resolved / stats.total) *
+                100).toFixed(0) : 0 }}%</span>
+            </div>
+            <div class="w-full bg-white/20 h-2 rounded-full overflow-hidden">
+              <div class="bg-gradient-to-r from-green-400 to-emerald-500 h-full rounded-full transition-all duration-1000"
+                [style.width.%]="stats.total > 0 ? (stats.resolved / stats.total) * 100 : 0"></div>
+            </div>
+          </div>
+        </div>
       </div>
-    </app-card-content>
-  </app-card>
+    </div>
+  </div>
+
+  <!-- Analytics Tab -->
+  <div *ngIf="activeTabIndex === 1" class="space-y-8 animate-in fade-in duration-500">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <!-- Priority Distribution -->
+      <div class="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm">
+        <h3 class="text-lg font-black text-gray-900 mb-8 flex items-center gap-2">
+          <div class="w-2 h-6 bg-indigo-500 rounded-full"></div>
+          Priority Breakdown
+        </h3>
+        <div class="h-80" *ngIf="priorityData.length > 0">
+          <ngx-charts-bar-vertical [results]="priorityData" [xAxis]="true" [yAxis]="true" [scheme]="priorityScheme">
+          </ngx-charts-bar-vertical>
+        </div>
+        <div *ngIf="priorityData.length === 0" class="py-20 text-center">
+          <mat-icon class="text-gray-200 text-6xl">bar_chart</mat-icon>
+          <p class="text-gray-400 font-bold mt-2">No priority data available</p>
+        </div>
+      </div>
+
+      <!-- Status Distribution -->
+      <div class="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm">
+        <h3 class="text-lg font-black text-gray-900 mb-8 flex items-center gap-2">
+          <div class="w-2 h-6 bg-primary rounded-full"></div>
+          Status Overview
+        </h3>
+        <div class="h-80" *ngIf="statusData.length > 0">
+          <ngx-charts-pie-chart [results]="statusData" [labels]="true" [doughnut]="true" [arcWidth]="0.4"
+            [scheme]="statusScheme" [animations]="true">
+          </ngx-charts-pie-chart>
+        </div>
+        <div *ngIf="statusData.length === 0" class="py-20 text-center">
+          <mat-icon class="text-gray-200 text-6xl">donut_large</mat-icon>
+          <p class="text-gray-400 font-bold mt-2">No status data available</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Metric Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div
+        class="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm flex items-center justify-between group">
+        <div>
+          <p class="text-xs font-black text-gray-400 uppercase mb-1">Avg. Response Time</p>
+          <div class="flex items-baseline gap-2">
+            <h4 class="text-4xl font-black text-gray-900">1.8</h4>
+            <span class="text-sm font-bold text-gray-500">Days</span>
+          </div>
+        </div>
+        <div
+          class="w-16 h-16 bg-green-50 rounded-2xl flex items-center justify-center text-green-500 group-hover:bg-green-500 group-hover:text-white transition-all">
+          <mat-icon class="text-3xl">bolt</mat-icon>
+        </div>
+      </div>
+
+      <div
+        class="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm flex items-center justify-between group">
+        <div>
+          <p class="text-xs font-black text-gray-400 uppercase mb-1">Resolution Score</p>
+          <div class="flex items-baseline gap-2">
+            <h4 class="text-4xl font-black text-gray-900">{{ stats.total > 0 ? ((stats.resolved / stats.total) *
+              100).toFixed(0) : 0 }}%</h4>
+            <span class="text-sm font-bold text-gray-500">Tickets</span>
+          </div>
+        </div>
+        <div
+          class="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-all">
+          <mat-icon class="text-3xl">verified</mat-icon>
+        </div>
+      </div>
+
+      <div
+        class="bg-gradient-to-tr from-indigo-600 to-primary p-8 rounded-[2rem] text-white shadow-xl shadow-primary/20">
+        <p class="text-[10px] font-black uppercase opacity-80 mb-4 tracking-wider">Operations Grade</p>
+        <h4 class="text-xl font-black mb-4 tracking-tight leading-snug">
+          {{ stats.urgent === 0 ? 'Excellent! No urgent issues pending.' : stats.urgent + ' urgent issue(s) require attention.' }}
+        </h4>
+        <div class="w-full bg-white/20 h-2 rounded-full overflow-hidden">
+          <div class="bg-white h-full rounded-full shadow-lg transition-all duration-1000"
+            [style.width.%]="stats.total > 0 ? ((stats.total - stats.urgent) / stats.total) * 100 : 100"></div>
+        </div>
+        <p class="text-[10px] font-bold mt-4 opacity-70">HEALTH SCORE: {{ stats.total > 0 ? (((stats.total -
+          stats.urgent) / stats.total) * 100).toFixed(0) : 100 }}%</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Activity Tab -->
+  <div *ngIf="activeTabIndex === 2" class="space-y-6 animate-in fade-in duration-500">
+    <div class="bg-white rounded-[2rem] border border-gray-100 shadow-sm overflow-hidden">
+      <div class="px-8 py-6 border-b border-gray-50 bg-gray-50/30">
+        <h3 class="text-lg font-black text-gray-900">All Issues Activity Log</h3>
+        <p class="text-sm text-gray-500 font-medium mt-1">Complete list of all maintenance requests sorted by latest
+          update</p>
+      </div>
+
+      <div *ngIf="allIssues.length === 0" class="py-20 text-center">
+        <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
+          <mat-icon class="text-gray-300 text-4xl">history</mat-icon>
+        </div>
+        <p class="text-gray-400 font-bold">No activity recorded</p>
+      </div>
+
+      <div *ngIf="allIssues.length > 0" class="divide-y divide-gray-50">
+        <div *ngFor="let issue of allIssues"
+          class="group flex items-center gap-6 p-6 hover:bg-primary/[0.02] cursor-pointer transition-all">
+          <!-- Timeline dot -->
+          <div class="relative flex flex-col items-center">
+            <div class="w-3 h-3 rounded-full border-2"
+              [class]="issue.status === 'open' ? 'border-amber-500 bg-amber-100' :
+                       issue.status === 'in-progress' ? 'border-blue-500 bg-blue-100' :
+                       issue.status === 'resolved' ? 'border-green-500 bg-green-100' :
+                       'border-gray-400 bg-gray-100'">
+            </div>
+          </div>
+
+          <div
+            class="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center text-gray-400 group-hover:scale-110 group-hover:bg-white group-hover:shadow-md transition-all">
+            <mat-icon>{{ getCategoryIcon(issue.category) }}</mat-icon>
+          </div>
+
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-3 mb-1">
+              <h4 class="font-black text-gray-900 truncate">{{ issue.title }}</h4>
+              <app-priority-badge [priority]="issue.priority"></app-priority-badge>
+            </div>
+            <div class="flex items-center gap-3 text-xs font-bold text-gray-400 flex-wrap">
+              <span class="uppercase tracking-wider">{{ issue.category }}</span>
+              <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
+              <span>{{ issue.residentName }}</span>
+              <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
+              <span>{{ issue.apartment }}</span>
+              <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
+              <span>{{ formatDate(issue.updatedAt) }}</span>
+            </div>
+          </div>
+
+          <div class="text-right flex flex-col items-end gap-2">
+            <app-status-badge [status]="issue.status"></app-status-badge>
+            <span class="text-[10px] uppercase font-black text-gray-300 tracking-tighter">{{ issue.id.substring(0,
+              8) }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
+
+<style>
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  @keyframes bounce-x {
+
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+
+    50% {
+      transform: translateX(5px);
+    }
+  }
+
+  .animate-bounce-x {
+    animation: bounce-x 1s infinite;
+  }
+</style>

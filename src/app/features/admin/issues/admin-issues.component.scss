@@ -2,13 +2,17 @@
   .mat-mdc-text-field-wrapper {
     padding: 0;
   }
-  
+
   .mat-mdc-form-field-infix {
     min-height: 36px;
     padding: 4px 0;
   }
-  
+
   .mat-mdc-form-field {
     font-size: 12px;
   }
+}
+
+:host {
+  display: block;
 }

@@ -1,1 +1,10 @@
-// Layout styles for admin
+// Admin layout premium styles
+
+:host {
+  display: block;
+}
+
+// Ensure smooth sidebar transitions
+aside {
+  will-change: width, transform;
+}

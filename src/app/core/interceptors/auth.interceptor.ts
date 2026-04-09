@@ -9,7 +9,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     console.log(`[AuthInterceptor] Intercepting: ${req.method} ${req.url}`);
 
     if (token) {
-        console.log(`[AuthInterceptor] Attaching token (length: ${token.length})`);
+        console.log(`[AuthInterceptor] Attaching token (length: ${token.length}) to ${req.url}`);
         const cloned = req.clone({
             setHeaders: {
                 Authorization: `Bearer ${token}`

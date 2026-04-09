@@ -21,6 +21,30 @@ export class IssueService {
   constructor() { }
 
   getIssues(): Observable<Issue[]> {
+    const user = this.authService.getCurrentUser();
+    if (!user || user.role !== 'admin') {
+      return this.issues$; // fallback to current logic / mock logic for non-admins or missing users
+    }
+
+    const clientId = user.clientId || 'KANHA1';
+    
+    // Call the combined api endpoint that fetches all complaints for this client (Admin view)
+    this.http.get<any>(`${this.API_URL}/complaint-service/complaints/client/${clientId}`).pipe(
+      map(response => {
+        const complaints = Array.isArray(response) ? response : (response.complaints || response.data || []);
+        let allIssues = this.mapComplaintsToIssues(complaints);
+
+        // Sort by newest first
+        allIssues.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+        this.issuesSubject.next(allIssues);
+      }),
+      catchError(error => {
+        console.error('Failed to fetch all issues for admin:', error);
+        return of([]);
+      })
+    ).subscribe();
+
     return this.issues$;
   }
 
@@ -29,7 +53,7 @@ export class IssueService {
    * GET http://localhost:8080/complaints/client/:clientId/status/:statusId
    */
   getIssuesByStatus(clientId: string, statusId: number): Observable<Issue[]> {
-    return this.http.get<any>(`${this.API_URL}/complaints/client/${clientId}/status/${statusId}`).pipe(
+    return this.http.get<any>(`${this.API_URL}/complaint-service/complaints/client/${clientId}/status/${statusId}`).pipe(
       map(response => {
         const complaints = Array.isArray(response) ? response : (response.complaints || response.data || []);
         return this.mapComplaintsToIssues(complaints);
@@ -84,7 +108,7 @@ export class IssueService {
     };
 
     return this.http.post<any>(
-      `${this.API_URL}/complaints/create/client/${clientId}/customer/${customerId}`,
+      `${this.API_URL}/complaint-service/complaints/create/client/${clientId}/customer/${customerId}`,
       complaintData
     ).pipe(
       tap(resp => console.log('API Create Response:', resp)),
@@ -261,22 +285,34 @@ export class IssueService {
   private mapComplaintsToIssues(complaints: any[]): Issue[] {
     return complaints.map(complaint => {
       const statusId = Number(complaint.statusId || 1);
+      
+      // Flatten notes from status updates if top-level notes are missing
+      let notes = complaint.notes || [];
+      if (notes.length === 0 && complaint.statusUpdates && Array.isArray(complaint.statusUpdates)) {
+        notes = complaint.statusUpdates.reduce((acc: string[], update: any) => {
+          if (update.notes && Array.isArray(update.notes)) {
+            return [...acc, ...update.notes];
+          }
+          return acc;
+        }, []);
+      }
+
       return {
         id: complaint.id || complaint._id,
-        title: complaint.title,
-        description: complaint.description,
+        title: complaint.title || 'No Title',
+        description: complaint.description || '',
         category: (complaint.category || 'other').toLowerCase(),
-        notes: complaint.notes || [],
+        notes: notes,
         status: this.mapStatusIdToStatus(statusId),
         statusId: statusId,
         priority: this.mapPriorityStringToPriority(String(complaint.priority || '0')),
         createdAt: complaint.createdAt || new Date().toISOString(),
         updatedAt: complaint.updatedAt || new Date().toISOString(),
         eta: complaint.eta || categoryETAs[((complaint.category || 'other').toLowerCase()) as IssueCategory],
-        residentId: complaint.customerId || '',
-        residentName: complaint.reportedBy || 'Unknown',
+        residentId: complaint.reportedByDetails?.id || complaint.userDetails?.id || complaint.customerId || '',
+        residentName: complaint.reportedByDetails?.name || complaint.userDetails?.name || complaint.reportedBy || 'Unknown',
         apartment: complaint.roomNumber || 'N/A',
-        assignedTo: complaint.assignedTo,
+        assignedTo: complaint.assignedToDetails?.id || complaint.assignedTo || '',
         comments: [],
         images: complaint.images || [],
         isCommonArea: false
@@ -299,7 +335,7 @@ export class IssueService {
     }
 
     // Call the combined api endpoint that fetches all complaints for this customer
-    this.http.get<any>(`${this.API_URL}/complaints/all/client/${user.clientId}/customer/${customerId}`).pipe(
+    this.http.get<any>(`${this.API_URL}/complaint-service/complaints/client/${user.clientId}/user/${customerId}`).pipe(
       map(response => {
         const complaints = Array.isArray(response) ? response : (response.complaints || response.data || []);
         let allUserIssues = this.mapComplaintsToIssues(complaints);

@@ -3,7 +3,7 @@
   <header class="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-100 shadow-sm"
     *ngIf="authService.user$ | async as user">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-18 py-3">
+      <div class="flex items-center justify-between py-5">
         <!-- Logo -->
         <div class="flex items-center gap-3 group cursor-pointer">
           <div
@@ -25,6 +25,13 @@
             <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse mr-2"></div>
             <span class="text-xs font-semibold text-gray-600">Live Updates Active</span>
           </div>
+
+          <!-- Admin Switcher -->
+          <button *ngIf="user.role === 'admin'" routerLink="/admin"
+            class="flex items-center gap-2 px-4 py-2 text-sm font-black text-indigo-600 hover:bg-indigo-50 transition-all rounded-xl group mr-2">
+            <mat-icon class="scale-90 group-hover:rotate-12 transition-transform">admin_panel_settings</mat-icon>
+            Admin View
+          </button>
 
           <button mat-icon-button class="relative hover:bg-gray-100 transition-colors">
             <mat-icon class="text-gray-500">notifications_none</mat-icon>
@@ -56,6 +63,11 @@
           <p class="font-bold text-gray-900">{{ user.name }}</p>
           <p class="text-[10px] text-gray-500 font-medium">{{ user.email }}</p>
         </div>
+        <button *ngIf="user.role === 'admin'" routerLink="/admin"
+          class="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-indigo-50 transition-colors text-sm font-semibold text-indigo-600">
+          <mat-icon class="text-indigo-400 scale-90">admin_panel_settings</mat-icon>
+          <span>Admin Portal</span>
+        </button>
         <button
           class="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors text-sm font-semibold text-gray-700">
           <mat-icon class="text-gray-400 scale-90">notifications</mat-icon>

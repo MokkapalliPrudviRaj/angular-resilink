@@ -85,7 +85,7 @@ export class LoginComponent implements OnInit {
     let payload: any = {};
     if (this.loginMethod === 'username') {
       if (!username) { this.toast.error('Username is required'); this.loading = false; return; }
-      payload = { loginType: 'CUSTOMER_ID_PASSWORD', username, password };
+      payload = { loginType: 'USER_ID_PASSWORD', clientId, username, userId: username, password };
     } else {
       if (!clientId || !email) { this.toast.error('Client ID and Email are required'); this.loading = false; return; }
       payload = { loginType: 'CLIENT_EMAIL_PASSWORD', clientId, email, password };

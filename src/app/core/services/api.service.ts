@@ -166,4 +166,7 @@ export class AuthService {
       return null;
     }
   }
+
+
+  private api
 }
