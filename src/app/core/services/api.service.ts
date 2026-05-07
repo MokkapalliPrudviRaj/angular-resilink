@@ -167,6 +167,4 @@ export class AuthService {
     }
   }
 
-
-  private api
 }

@@ -132,13 +132,29 @@
   display: block;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .animate-blob,
+  .animate-slide-down,
+  .animate-fade-in-up,
+  .animate-fade-in-right,
+  .animate-bounce-slow,
+  .animate-fade-in {
+    animation: none !important;
+  }
+}
+
 /* Custom styles for gradients and text clipping */
 .bg-clip-text {
   -webkit-background-clip: text;
   background-clip: text;
 }
 
-/* Hide scrollbar for the infinite scroll container */
-.animate-scroll {
-  will-change: transform;
-}

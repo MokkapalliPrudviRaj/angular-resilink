@@ -19,7 +19,7 @@
         <div class="flex items-center gap-3 cursor-pointer hover:scale-105 transition-transform">
           <div
             class="w-10 h-10 bg-gradient-to-br from-[#5048e5] to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
-            <mat-icon class="text-white">apartment</mat-icon>
+            <mat-icon class="text-white" aria-hidden="true">apartment</mat-icon>
           </div>
           <h1 class="text-xl font-bold bg-gradient-to-r from-[#5048e5] to-indigo-600 bg-clip-text text-transparent">
             ResiLink</h1>
@@ -44,11 +44,6 @@
     <div class="grid lg:grid-cols-2 gap-12 items-center">
       <!-- Left Content -->
       <div class="text-left animate-fade-in-up">
-        <div class="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 rounded-full mb-6">
-          <mat-icon class="text-blue-600 text-sm w-4 h-4 mr-1">auto_awesome</mat-icon>
-          <span class="text-sm font-medium text-blue-600">Modern Maintenance Management</span>
-        </div>
-
         <h1 class="text-5xl md:text-6xl font-bold mb-6 leading-tight">
           Manage Apartment Maintenance
           <span class="bg-gradient-to-r from-[#5048e5] to-indigo-600 bg-clip-text text-transparent">
@@ -66,7 +61,7 @@
             <app-button size="lg" variant="ghost"
               extraClass="bg-gradient-to-r from-[#5048e5] to-indigo-600 hover:from-[#4038d5] hover:to-indigo-700 shadow-xl w-full px-2 py-4 sm:w-auto text-white rounded-xl transition-all hover:scale-105 active:scale-95">
               Start Free Trial
-              <mat-icon class="ml-2 inline-block align-middle">arrow_forward</mat-icon>
+              <mat-icon class="ml-2 inline-block align-middle" aria-hidden="true">arrow_forward</mat-icon>
             </app-button>
           </a>
         </div>
@@ -74,10 +69,10 @@
 
       <!-- Right Image -->
       <div class="relative animate-fade-in-right">
-        <div class="relative rounded-2xl overflow-hidden shadow-2xl h-[50vh] min-h-[400px] lg:h-[70vh]">
+        <div class="relative rounded-2xl overflow-hidden shadow-2xl h-[45vh] min-h-[400px] lg:h-[70vh]">
           <img
             src="https://images.unsplash.com/photo-1559329146-807aff9ff1fb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjBhcGFydG1lbnQlMjBidWlsZGluZyUyMGV4dGVyaW9yfGVufDF8fHx8MTc3MjM0OTI0N3ww&ixlib=rb-4.1.0&q=80&w=1080"
-            alt="Modern apartment building" class="w-full h-full object-cover" />
+            loading="lazy" alt="Modern apartment building" class="w-full h-full object-cover" />
           <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
         </div>
 
@@ -86,7 +81,7 @@
           class="absolute -bottom-6 -left-6 bg-white rounded-xl shadow-lg p-4 border border-gray-100 hover:scale-105 transition-transform animate-bounce-slow">
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-              <mat-icon class="text-green-600">check_circle</mat-icon>
+              <mat-icon class="text-green-600" aria-hidden="true">check_circle</mat-icon>
             </div>
             <div>
               <p class="text-2xl font-bold text-gray-900">98%</p>
@@ -99,7 +94,7 @@
           class="absolute -top-6 -right-6 bg-white rounded-xl shadow-lg p-4 border border-gray-100 hover:scale-105 transition-transform animate-bounce-slow animation-delay-1000">
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-              <mat-icon class="text-blue-600">bolt</mat-icon>
+              <mat-icon class="text-blue-600" aria-hidden="true">bolt</mat-icon>
             </div>
             <div>
               <p class="text-2xl font-bold text-gray-900">24h</p>
@@ -153,11 +148,14 @@
   </section>
 
   <!-- Social Proof Section -->
-  <section class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 overflow-hidden">
-    <div class="text-center mb-12">
+  <section class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="text-center mb-6">
       <h2 class="text-4xl font-bold mb-4">Trusted by Property Managers</h2>
-      <p class="text-xl text-gray-600">
+      <p class="text-xl text-gray-600 mb-3">
         See what our customers have to say
+      </p>
+      <p class="text-sm text-gray-500 max-w-2xl mx-auto">
+        Trusted by leading property management teams for reliability, speed, and happier residents.
       </p>
     </div>
 
@@ -227,7 +225,7 @@
         <div class="flex items-center gap-3">
           <div
             class="w-8 h-8 bg-gradient-to-br from-[#5048e5] to-indigo-600 rounded-lg flex items-center justify-center">
-            <mat-icon class="text-white text-sm scale-75">apartment</mat-icon>
+            <mat-icon class="text-white">apartment</mat-icon>
           </div>
           <span
             class="text-lg font-bold bg-gradient-to-r from-[#5048e5] to-indigo-600 bg-clip-text text-transparent">ResiLink</span>

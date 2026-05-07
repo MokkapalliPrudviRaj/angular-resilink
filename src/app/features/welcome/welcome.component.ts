@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { ButtonComponent } from '../../shared/components/button/button.component';
@@ -9,6 +9,7 @@ import { MatIconModule } from '@angular/material/icon';
   selector: 'app-welcome',
   standalone: true,
   imports: [CommonModule, RouterModule, ButtonComponent, CardComponent, CardContentComponent, MatIconModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './welcome.component.html',
   styleUrls: ['./welcome.component.scss']
 })
@@ -66,7 +67,7 @@ export class WelcomeComponent {
     }
   ];
 
-  testimonials = [
+  readonly testimonials = [
     {
       name: 'Jane Doe',
       role: 'Property Manager',
