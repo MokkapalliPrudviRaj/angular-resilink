@@ -17,7 +17,7 @@ export interface Issue {
   title: string;
   description: string;
   category: string;
-  status: 'open' | 'in-progress' | 'resolved' | 'closed';
+  status: string;
   statusId: number;
   priority: 'low' | 'medium' | 'high' | 'urgent';
   createdAt: string;
@@ -30,6 +30,9 @@ export interface Issue {
   images: string[];
   comments: Comment[];
   notes: string[];
+  escalateTo?: string;
+  assignedToName?: string;
+  escalateToName?: string;
   isCommonArea?: boolean;
 }
 
@@ -51,6 +54,32 @@ export interface Staff {
   activeIssues: number;
 }
 
-export type IssueStatus = Issue['status'];
+export interface ComplaintStatus {
+  clientId: string;
+  createdAt: string;
+  createdBy: string;
+  currentStatusId: number;
+  description: string;
+  id: string;
+  name: string;
+  title: string;
+  updatedAt: string;
+  updatedBy: string;
+}
+
+export interface Employee {
+  clientId: string;
+  email: string;
+  id: string;
+  mobileNumber: string | null;
+  name: string | null;
+  password: string;
+  roles: string;
+  status: boolean;
+  userId: string;
+  version: number;
+}
+
+export type IssueStatus = string;
 export type IssuePriority = Issue['priority'];
 export type IssueCategory = Issue['category'];

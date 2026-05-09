@@ -73,7 +73,7 @@ export class AuthService {
           id: response.id || response.userId || response.data?.id || payload.username || payload.email,
           customerId: response.customerId || response.customer_id || response.userId || response.data?.customerId || response.id || payload.username || '',
           clientId: response.clientId || response.client_id || response.data?.clientId || payload.clientId || 'KANHA1',
-          name: response.name || response.fullName || response.data?.name || payload.username || payload.email,
+          name: response.name || (payload.username || payload.email || 'Resident').split('@')[0],
           email: response.email || response.data?.email || payload.email || `${payload.username || 'user'}@apartment.com`,
           phone: response.phone || response.data?.phone || '',
           role: userRole,
@@ -97,11 +97,12 @@ export class AuthService {
     );
   }
 
-  signup(email: string, password: string, confirmPassword: string): Observable<User> {
+  signup(email: string, password: string, confirmPassword: string, name: string): Observable<User> {
     return this.http.post(`${this.API_URL}/user-service/register`, {
       email,
       password,
       newPassword: password,
+      name,
       role: 'USER'
     }, { responseType: 'text', observe: 'response' }).pipe(
       map(response => {
@@ -111,7 +112,7 @@ export class AuthService {
           username: email,
           customerId: customerId,
           clientId: 'KANHA1',
-          name: email.split('@')[0],
+          name: name || email.split('@')[0],
           email: email,
           phone: '',
           role: 'resident'

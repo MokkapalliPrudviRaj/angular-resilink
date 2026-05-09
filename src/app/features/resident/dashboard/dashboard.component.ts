@@ -14,16 +14,17 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { formatDistanceToNow } from 'date-fns';
 import { CardComponent, CardHeaderComponent, CardTitleComponent, CardContentComponent } from '../../../shared/components/card/card.component';
 import { ButtonComponent } from '../../../shared/components/button/button.component';
 import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge.component';
 import { PriorityBadgeComponent } from '../../../shared/components/priority-badge/priority-badge.component';
 import { CreateIssueDialogComponent } from '../create-issue-dialog/create-issue-dialog.component';
+import { IssueDetailDialogComponent } from '../../../shared/components/issue-detail-dialog/issue-detail-dialog.component';
 import { AuthService } from '../../../core/services/auth.service';
 import { IssueService } from '../../../core/services/issue.service';
 import { Issue, IssueStatus, IssuePriority } from '../../../core/models';
 import { categoryETAs } from '../../../core/data/mock-data';
-import { formatDistanceToNow } from 'date-fns';
 
 interface CategoryData {
   name: string;
@@ -261,6 +262,16 @@ export class DashboardComponent implements OnInit {
   }
 
   openIssueDetail(issue: Issue): void {
-    this.snackBar.open(`Viewing detail for: ${issue.title}`, 'Close', { duration: 2000 });
+    this.dialog.open(IssueDetailDialogComponent, {
+      width: '800px',
+      maxWidth: '95vw',
+      panelClass: 'premium-dialog',
+      data: {
+        issue,
+        user: this.authService.getCurrentUser()
+      }
+    }).afterClosed().subscribe(() => {
+      this.loadIssues(); // Refresh if notes were added
+    });
   }
 }

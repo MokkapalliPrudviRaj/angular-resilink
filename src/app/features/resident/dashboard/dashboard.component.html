@@ -60,7 +60,7 @@
         class="md:hidden border-t border-gray-100 py-4 space-y-2 bg-white animate-in slide-in-from-top duration-300">
         <div class="px-4 pb-2 mb-2 border-b border-gray-50">
           <p class="text-xs font-bold text-gray-400 uppercase">My Account</p>
-          <p class="font-bold text-gray-900">{{ user.name }}</p>
+          <p class="font-bold text-gray-900">{{ user.name.includes('@') ? user.name.split('@')[0] : user.name }}</p>
           <p class="text-[10px] text-gray-500 font-medium">{{ user.email }}</p>
         </div>
         <button *ngIf="user.role === 'admin'" routerLink="/admin"
@@ -97,7 +97,7 @@
             <p class="text-blue-200 font-bold tracking-widest uppercase text-[10px] mb-3">Residential Portal</p>
             <h2 class="text-3xl md:text-5xl font-black text-white mb-4 leading-tight truncate"
               *ngIf="authService.user$ | async as user" [title]="user.name">
-              Hello, {{ user.name.split(' ')[0] || 'Resident' }}!
+              Hello, {{ (user.name.includes('@') ? user.name.split('@')[0] : user.name) || 'Resident' }}!
             </h2>
             <p class="text-lg text-blue-100/90 font-medium mb-0">
               Need something fixed? We're here to help you keep your home in perfect shape.

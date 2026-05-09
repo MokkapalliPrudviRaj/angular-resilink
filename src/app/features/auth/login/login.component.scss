@@ -1,3 +1,49 @@
+/* =========================
+   BACKDROP OVERLAY
+========================= */
+
+.auth-overlay {
+  animation: fadeIn 0.25s ease;
+  backdrop-filter: blur(10px);
+}
+
+/* =========================
+   MODAL CONTAINER
+========================= */
+
+.animate-modal {
+  animation: modalEnter 0.35s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Premium glass border effect */
+.animate-modal::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 28px;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.45),
+    rgba(255, 255, 255, 0.08)
+  );
+
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+
+  pointer-events: none;
+}
+
+/* =========================
+   ANIMATIONS
+========================= */
+
 @keyframes blob {
   0% {
     transform: translate(0px, 0px) scale(1);
@@ -56,6 +102,34 @@
   }
 }
 
+/* Main modal animation */
+@keyframes modalEnter {
+  0% {
+    opacity: 0;
+    transform: scale(0.92) translateY(20px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Overlay fade */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* =========================
+   ANIMATION UTILITIES
+========================= */
+
 .animate-blob {
   animation: blob 7s infinite ease-in-out;
 }
@@ -80,9 +154,12 @@
   animation-delay: 4s;
 }
 
-// Custom Scrollbar for the form if it grows too long
+/* =========================
+   FORM SCROLL
+========================= */
+
 .max-h-form {
-  max-height: calc(100vh - 10rem);
+  max-height: calc(100vh - 6rem);
   overflow-y: auto;
 
   &::-webkit-scrollbar {
@@ -94,19 +171,68 @@
   }
 
   &::-webkit-scrollbar-thumb {
-    background: #e2e8f0;
+    background: rgba(203, 213, 225, 0.7);
     border-radius: 10px;
   }
 }
 
+/* =========================
+   INPUT IMPROVEMENTS
+========================= */
+
+input {
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
+}
+
+input:focus {
+  background: rgba(255, 255, 255, 0.95);
+}
+
+/* =========================
+   BUTTON IMPROVEMENTS
+========================= */
+
+button {
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+/* =========================
+   MATERIAL ICON ALIGNMENT
+========================= */
+
 :host {
   display: block;
 
-  // Improve material icon alignment in custom inputs
-  .material-icons {
+  .material-icons,
+  mat-icon {
     font-size: 18px;
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+}
+
+/* =========================
+   MOBILE RESPONSIVE
+========================= */
+
+@media (max-width: 640px) {
+  .animate-modal {
+    border-radius: 24px;
+    max-width: 100%;
+  }
+
+  .max-h-form {
+    max-height: calc(100vh - 3rem);
   }
 }

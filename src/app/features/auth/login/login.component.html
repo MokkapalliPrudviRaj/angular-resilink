@@ -1,16 +1,22 @@
-<div class="min-h-screen bg-[#f8fafc] flex items-center justify-center px-4 py-12 relative overflow-hidden">
-  <!-- Animated background elements (Subtle) -->
-  <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
-    <div class="absolute top-[-10%] left-[-5%] w-[40%] h-[40%] bg-purple-100/50 rounded-full blur-[120px] animate-blob">
-    </div>
-    <div
-      class="absolute bottom-[-10%] right-[-5%] w-[40%] h-[40%] bg-blue-100/50 rounded-full blur-[120px] animate-blob animation-delay-2000">
-    </div>
-  </div>
+<!-- CHATGPT STYLE LOGIN / SIGNUP MODAL -->
+<div class="fixed inset-0 z-[100] flex items-center justify-center p-4 auth-overlay">
 
-  <!-- Card Container -->
+  <!-- WELCOME BACKGROUND -->
+  <app-welcome class="absolute inset-0 z-0 pointer-events-none"></app-welcome>
+
+  <!-- BACKDROP -->
+  <div class="absolute inset-0 bg-black/0 backdrop-blur-sm"></div>
+
+  <!-- MODAL -->
   <div
-    class="bg-white w-full max-w-[480px] rounded-[24px] shadow-[0_20px_50px_rgba(0,0,0,0.08)] border border-gray-100 relative z-20 overflow-hidden animate-scale-in">
+    class="relative z-20 w-full max-w-[370px]
+    rounded-[24px]
+    border border-white/20
+    bg-white/75
+    backdrop-blur-2xl
+    shadow-[0_20px_70px_rgba(0,0,0,0.18)]
+    overflow-hidden
+    animate-modal">
 
     <!-- Header with Close Button -->
     <div class="p-8 pb-4 flex items-center justify-between">
@@ -18,154 +24,406 @@
         <div class="w-12 h-12 bg-[#5048e5] rounded-[14px] flex items-center justify-center shadow-lg shadow-indigo-200">
           <mat-icon class="text-white">apartment</mat-icon>
         </div>
-        <h2 class="text-[22px] font-bold text-[#5048e5] tracking-tight">ResiLink</h2>
+
+        <!-- TITLE -->
+        <h2 class="text-[18px] font-bold text-[#5048e5] tracking-tight">
+          ResiLink
+        </h2>
       </div>
-      <button (click)="goHome()" class="text-gray-400 hover:text-gray-600 transition-colors">
-        <mat-icon class="text-[20px] w-5 h-5">close</mat-icon>
+
+      <!-- CLOSE -->
+      <button
+        (click)="goHome()"
+        class="text-gray-400 hover:text-gray-700 transition-colors">
+
+        <mat-icon class="text-[18px]">
+          close
+        </mat-icon>
       </button>
     </div>
 
-    <!-- Toggle Forms -->
-    <div class="px-8 pb-8">
-      <!-- Title Section -->
-      <div class="mb-8">
-        <h1 class="text-[32px] font-extrabold text-gray-900 leading-tight mb-2">
+    <!-- BODY -->
+    <div class="px-5 pb-5 max-h-form">
+
+      <!-- TITLE SECTION -->
+      <div class="mb-4">
+
+        <h1 class="text-[22px] font-extrabold text-gray-900 leading-tight mb-1">
           {{ isSignup ? 'Create Account' : 'Welcome Back' }}
         </h1>
-        <p class="text-[15px] text-gray-500 font-medium">
-          {{ isSignup ? 'Register to manage your apartment maintenance' : 'Log in to manage your maintenance requests'
+
+        <p class="text-[12px] text-gray-500 font-medium leading-relaxed">
+          {{
+            isSignup
+              ? 'Register to manage apartment maintenance'
+              : 'Log in to manage maintenance requests'
           }}
         </p>
       </div>
 
       <!-- LOGIN FORM -->
-      <form *ngIf="!isSignup" [formGroup]="loginForm" (ngSubmit)="onLogin()" class="space-y-5 animate-fade-in-left">
-        <!-- Login Method Toggle -->
-        <div class="flex p-1 bg-gray-100 rounded-[14px]">
-          <button type="button" (click)="setLoginMethod('username')" [class.bg-white]="loginMethod === 'username'"
-            [class.shadow]="loginMethod === 'username'" [class.text-indigo-600]="loginMethod === 'username'"
-            class="flex-1 py-2 text-sm font-bold text-gray-500 rounded-[10px] transition-all">By Username</button>
-          <button type="button" (click)="setLoginMethod('email')" [class.bg-white]="loginMethod === 'email'"
-            [class.shadow]="loginMethod === 'email'" [class.text-indigo-600]="loginMethod === 'email'"
-            class="flex-1 py-2 text-sm font-bold text-gray-500 rounded-[10px] transition-all">By Email</button>
+      <form
+        *ngIf="!isSignup"
+        [formGroup]="loginForm"
+        (ngSubmit)="onLogin()"
+        class="space-y-3 animate-fade-in-left">
+
+        <!-- LOGIN METHOD -->
+        <div class="flex p-1 bg-gray-100/80 rounded-[12px]">
+
+          <button
+            type="button"
+            (click)="setLoginMethod('username')"
+            [class.bg-white]="loginMethod === 'username'"
+            [class.shadow]="loginMethod === 'username'"
+            [class.text-indigo-600]="loginMethod === 'username'"
+            class="flex-1 py-1.5 text-[12px] font-bold text-gray-500 rounded-[10px] transition-all">
+
+            Username
+          </button>
+
+          <button
+            type="button"
+            (click)="setLoginMethod('email')"
+            [class.bg-white]="loginMethod === 'email'"
+            [class.shadow]="loginMethod === 'email'"
+            [class.text-indigo-600]="loginMethod === 'email'"
+            class="flex-1 py-1.5 text-[12px] font-bold text-gray-500 rounded-[10px] transition-all">
+
+            Email
+          </button>
         </div>
 
-        <!-- Username Field -->
-        <div *ngIf="loginMethod === 'username'" class="space-y-2 animate-in fade-in zoom-in-95 duration-200">
-          <label class="block text-[15px] font-bold text-gray-900">Username</label>
-          <div class="relative group">
+        <!-- USERNAME -->
+        <div *ngIf="loginMethod === 'username'" class="space-y-1.5">
+
+          <label class="block text-[12px] font-bold text-gray-900">
+            Username
+          </label>
+
+          <div class="relative">
+
             <mat-icon
-              class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-[18px] w-[18px] h-[18px]">person</mat-icon>
-            <input type="text" formControlName="username" placeholder="e.g. 2026KANH..."
-              class="w-full h-[54px] pl-12 pr-4 bg-[#f8fafc] border border-[#e2e8f0] rounded-[14px] text-[15px] font-medium text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#5048e5] focus:ring-[3px] focus:ring-[#5048e5]/10 transition-all" />
+              class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[16px]">
+              person
+            </mat-icon>
+
+            <input
+              type="text"
+              formControlName="username"
+              placeholder="Enter username"
+              class="w-full h-[42px]
+              pl-10 pr-3
+              bg-white/70
+              border border-[#e2e8f0]
+              rounded-[12px]
+              text-[13px]
+              font-medium
+              text-gray-900
+              placeholder:text-gray-400
+              focus:outline-none
+              focus:border-[#5048e5]
+              focus:ring-[3px]
+              focus:ring-[#5048e5]/10" />
           </div>
         </div>
 
-        <!-- Client ID and Email Fields -->
+        <!-- EMAIL LOGIN -->
         <ng-container *ngIf="loginMethod === 'email'">
-          <div class="space-y-2 animate-in fade-in zoom-in-95 duration-200">
-            <label class="block text-[15px] font-bold text-gray-900">Client ID</label>
-            <div class="relative group">
+
+          <!-- CLIENT ID -->
+          <div class="space-y-1.5">
+
+            <label class="block text-[12px] font-bold text-gray-900">
+              Client ID
+            </label>
+
+            <div class="relative">
+
               <mat-icon
-                class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-[18px] w-[18px] h-[18px]">business</mat-icon>
-              <input type="text" formControlName="clientId" placeholder="e.g. KANHA1"
-                class="w-full h-[54px] pl-12 pr-4 bg-[#f8fafc] border border-[#e2e8f0] rounded-[14px] text-[15px] font-medium text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#5048e5] focus:ring-[3px] focus:ring-[#5048e5]/10 transition-all uppercase" />
+                class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[16px]">
+                business
+              </mat-icon>
+
+              <input
+                type="text"
+                formControlName="clientId"
+                placeholder="KANHA1"
+                readonly
+                class="w-full h-[42px]
+                pl-10 pr-3
+                bg-white/70
+                border border-[#e2e8f0]
+                rounded-[12px]
+                text-[13px]
+                uppercase
+                font-medium
+                text-gray-900
+                placeholder:text-gray-400
+                focus:outline-none
+                focus:border-[#5048e5]
+                focus:ring-[3px]
+                focus:ring-[#5048e5]/10" />
             </div>
           </div>
-          <div class="space-y-2 animate-in fade-in zoom-in-95 duration-200">
-            <label class="block text-[15px] font-bold text-gray-900">Email Address</label>
-            <div class="relative group">
+
+          <!-- EMAIL -->
+          <div class="space-y-1.5">
+
+            <label class="block text-[12px] font-bold text-gray-900">
+              Email Address
+            </label>
+
+            <div class="relative">
+
               <mat-icon
-                class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-[18px] w-[18px] h-[18px]">email</mat-icon>
-              <input type="email" formControlName="email" placeholder="name@example.com"
-                class="w-full h-[54px] pl-12 pr-4 bg-[#f8fafc] border border-[#e2e8f0] rounded-[14px] text-[15px] font-medium text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#5048e5] focus:ring-[3px] focus:ring-[#5048e5]/10 transition-all" />
+                class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[16px]">
+                email
+              </mat-icon>
+
+              <input
+                type="email"
+                formControlName="email"
+                placeholder="name@example.com"
+                class="w-full h-[42px]
+                pl-10 pr-3
+                bg-white/70
+                border border-[#e2e8f0]
+                rounded-[12px]
+                text-[13px]
+                font-medium
+                text-gray-900
+                placeholder:text-gray-400
+                focus:outline-none
+                focus:border-[#5048e5]
+                focus:ring-[3px]
+                focus:ring-[#5048e5]/10" />
             </div>
           </div>
         </ng-container>
 
-        <!-- Password Field -->
-        <div class="space-y-2">
+        <!-- PASSWORD -->
+        <div class="space-y-1.5">
+
           <div class="flex items-center justify-between">
-            <label class="block text-[15px] font-bold text-gray-900">Password</label>
-            <a routerLink="/forgot-password" class="text-[13px] font-bold text-[#5048e5] hover:underline">Forgot?</a>
+
+            <label class="block text-[12px] font-bold text-gray-900">
+              Password
+            </label>
+
+            <a
+              routerLink="/forgot-password"
+              class="text-[11px] font-bold text-[#5048e5] hover:underline">
+
+              Forgot?
+            </a>
           </div>
+
           <div class="relative">
+
             <mat-icon
-              class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-[18px] w-[18px] h-[18px]">lock</mat-icon>
-            <input [type]="showPassword ? 'text' : 'password'" formControlName="password" placeholder="••••••••"
-              class="w-full h-[54px] pl-12 pr-12 bg-[#f8fafc] border border-[#e2e8f0] rounded-[14px] text-[15px] font-medium text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#5048e5] focus:ring-[3px] focus:ring-[#5048e5]/10 transition-all" />
-            <button type="button" (click)="showPassword = !showPassword"
-              class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">
-              <mat-icon class="text-[20px]">{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+              class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[16px]">
+              lock
+            </mat-icon>
+
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              formControlName="password"
+              placeholder="••••••••"
+              class="w-full h-[42px]
+              pl-10 pr-10
+              bg-white/70
+              border border-[#e2e8f0]
+              rounded-[12px]
+              text-[13px]
+              font-medium
+              text-gray-900
+              placeholder:text-gray-400
+              focus:outline-none
+              focus:border-[#5048e5]
+              focus:ring-[3px]
+              focus:ring-[#5048e5]/10" />
+
+            <button
+              type="button"
+              (click)="showPassword = !showPassword"
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
+
+              <mat-icon class="text-[18px]">
+                {{ showPassword ? 'visibility_off' : 'visibility' }}
+              </mat-icon>
             </button>
           </div>
         </div>
 
-        <!-- Sign In Button -->
-        <button type="submit" [disabled]="loginForm.invalid || loading"
-          class="w-full h-[54px] bg-[#5048e5] hover:bg-[#4038d5] text-white font-bold text-[16px] rounded-[14px] shadow-lg shadow-indigo-100 flex items-center justify-center gap-2 transition-all hover:translate-y-[-1px] active:translate-y-[1px] disabled:opacity-70 disabled:cursor-not-allowed mt-8">
+        <!-- LOGIN BUTTON -->
+        <button
+          type="submit"
+          [disabled]="loginForm.invalid || loading"
+          class="w-full h-[42px]
+          bg-[#5048e5]
+          hover:bg-[#4338ca]
+          text-white
+          font-bold
+          text-[13px]
+          rounded-[12px]
+          shadow-md shadow-indigo-200
+          flex items-center justify-center gap-1.5
+          mt-4">
+
           {{ loading ? 'Signing In...' : 'Sign In' }}
-          <mat-icon *ngIf="!loading" class="text-[18px] w-[18px] h-[18px]">arrow_forward</mat-icon>
+
+          <mat-icon *ngIf="!loading" class="text-[16px]">
+            arrow_forward
+          </mat-icon>
         </button>
       </form>
 
       <!-- SIGNUP FORM -->
-      <form *ngIf="isSignup" [formGroup]="signupForm" (ngSubmit)="onSignup()" class="space-y-5 animate-fade-in-right">
-        <!-- Email -->
-        <div class="space-y-2">
-          <label class="block text-[15px] font-bold text-gray-900">Email Address</label>
-          <div class="relative group">
+      <form
+        *ngIf="isSignup"
+        [formGroup]="signupForm"
+        (ngSubmit)="onSignup()"
+        class="space-y-3 animate-fade-in-right">
+
+        <!-- FULL NAME -->
+        <div class="space-y-1.5">
+
+          <label class="block text-[12px] font-bold text-gray-900">
+            Full Name
+          </label>
+
+          <div class="relative">
+
             <mat-icon
-              class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-[18px] w-[18px] h-[18px]">email</mat-icon>
-            <input type="email" formControlName="email" placeholder="name@example.com"
-              class="w-full h-[54px] pl-12 pr-4 bg-[#f8fafc] border border-[#e2e8f0] rounded-[14px] text-[15px] font-medium text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#5048e5] focus:ring-[3px] focus:ring-[#5048e5]/10 transition-all" />
+              class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[16px]">
+              person
+            </mat-icon>
+
+            <input
+              type="text"
+              formControlName="fullName"
+              placeholder="Enter your full name"
+              class="w-full h-[42px]
+              pl-10 pr-3
+              bg-white/70
+              border border-[#e2e8f0]
+              rounded-[12px]
+              text-[13px]
+              font-medium
+              text-gray-900
+              placeholder:text-gray-400
+              focus:outline-none
+              focus:border-[#5048e5]
+              focus:ring-[3px]
+              focus:ring-[#5048e5]/10" />
           </div>
         </div>
 
-        <!-- Password -->
-        <div class="space-y-2">
-          <label class="block text-[15px] font-bold text-gray-900">Password</label>
-          <div class="relative group">
+        <!-- EMAIL -->
+        <div class="space-y-1.5">
+
+          <label class="block text-[12px] font-bold text-gray-900">
+            Email Address
+          </label>
+
+          <div class="relative">
+
             <mat-icon
-              class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-[18px] w-[18px] h-[18px]">lock</mat-icon>
-            <input [type]="showPassword ? 'text' : 'password'" formControlName="password" placeholder="••••••••"
-              class="w-full h-[54px] pl-12 pr-12 bg-[#f8fafc] border border-[#e2e8f0] rounded-[14px] text-[15px] font-medium text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#5048e5] focus:ring-[3px] focus:ring-[#5048e5]/10 transition-all" />
-            <button type="button" (click)="showPassword = !showPassword"
-              class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">
-              <mat-icon class="text-[20px]">{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
-            </button>
+              class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[16px]">
+              email
+            </mat-icon>
+
+            <input
+              type="email"
+              formControlName="email"
+              placeholder="name@example.com"
+              class="w-full h-[42px]
+              pl-10 pr-3
+              bg-white/70
+              border border-[#e2e8f0]
+              rounded-[12px]
+              text-[13px]
+              font-medium
+              text-gray-900
+              placeholder:text-gray-400
+              focus:outline-none
+              focus:border-[#5048e5]
+              focus:ring-[3px]
+              focus:ring-[#5048e5]/10" />
           </div>
         </div>
 
-        <!-- Confirm Password -->
-        <div class="space-y-2">
-          <label class="block text-[15px] font-bold text-gray-900">Confirm Password</label>
-          <div class="relative group">
+        <!-- PASSWORD -->
+        <div class="space-y-1.5">
+
+          <label class="block text-[12px] font-bold text-gray-900">
+            Password
+          </label>
+
+          <div class="relative">
+
             <mat-icon
-              class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-[18px] w-[18px] h-[18px]">lock</mat-icon>
-            <input [type]="showConfirmPassword ? 'text' : 'password'" formControlName="confirmPassword"
+              class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[16px]">
+              lock
+            </mat-icon>
+
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              formControlName="password"
               placeholder="••••••••"
-              class="w-full h-[54px] pl-12 pr-12 bg-[#f8fafc] border border-[#e2e8f0] rounded-[14px] text-[15px] font-medium text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#5048e5] focus:ring-[3px] focus:ring-[#5048e5]/10 transition-all" />
-            <button type="button" (click)="showConfirmPassword = !showConfirmPassword"
-              class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">
-              <mat-icon class="text-[20px]">{{ showConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
-            </button>
+              class="w-full h-[42px]
+              pl-10 pr-10
+              bg-white/70
+              border border-[#e2e8f0]
+              rounded-[12px]
+              text-[13px]
+              font-medium
+              text-gray-900
+              placeholder:text-gray-400
+              focus:outline-none
+              focus:border-[#5048e5]
+              focus:ring-[3px]
+              focus:ring-[#5048e5]/10" />
           </div>
         </div>
 
-        <!-- Create Account Button -->
-        <button type="submit" [disabled]="signupForm.invalid || loading"
-          class="w-full h-[54px] bg-[#5048e5] hover:bg-[#4038d5] text-white font-bold text-[16px] rounded-[14px] shadow-lg shadow-indigo-100 flex items-center justify-center gap-2 transition-all hover:translate-y-[-1px] active:translate-y-[1px] disabled:opacity-70 disabled:cursor-not-allowed mt-8">
+
+
+        <!-- SIGNUP BUTTON -->
+        <button
+          type="submit"
+          [disabled]="signupForm.invalid || loading"
+          class="w-full h-[42px]
+          bg-[#5048e5]
+          hover:bg-[#4338ca]
+          text-white
+          font-bold
+          text-[13px]
+          rounded-[12px]
+          shadow-md shadow-indigo-200
+          flex items-center justify-center gap-1.5
+          mt-4">
+
           {{ loading ? 'Creating Account...' : 'Create Account' }}
-          <mat-icon *ngIf="!loading" class="text-[18px] w-[18px] h-[18px]">arrow_forward</mat-icon>
+
+          <mat-icon *ngIf="!loading" class="text-[16px]">
+            arrow_forward
+          </mat-icon>
         </button>
       </form>
 
-      <!-- Footer Switch -->
-      <div class="mt-8 text-center pt-6 border-t border-gray-50">
-        <p class="text-[14px] text-gray-500 font-medium">
+      <!-- FOOTER -->
+      <div class="mt-4 pt-3 border-t border-gray-100 text-center">
+
+        <p class="text-[12px] text-gray-500 font-medium">
+
           {{ isSignup ? 'Already have an account?' : "Don't have an account?" }}
-          <button (click)="toggleMode()" class="text-[#5048e5] font-bold hover:underline ml-1">
+
+          <button
+            (click)="toggleMode()"
+            class="text-[#5048e5] font-bold hover:underline ml-1">
+
             {{ isSignup ? 'Sign In' : 'Sign Up' }}
           </button>
         </p>

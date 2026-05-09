@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -9,6 +9,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { Issue } from '../../../core/models';
 import { categoryETAs } from '../../../core/data/mock-data';
+import { IssueService } from '../../../core/services/issue.service';
 
 @Component({
   selector: 'app-create-issue-dialog',
@@ -54,6 +55,19 @@ import { categoryETAs } from '../../../core/data/mock-data';
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <mat-form-field appearance="outline" class="w-full h-fit">
+            <mat-label>Status</mat-label>
+            <mat-select [(ngModel)]="selectedStatusId" required>
+              <mat-option *ngFor="let status of statusOptions" [value]="status.currentStatusId">
+                {{ status.title || status.name }}
+              </mat-option>
+            </mat-select>
+            <mat-icon matSuffix class="text-gray-400">flag</mat-icon>
+          </mat-form-field>
+
           <mat-form-field appearance="outline" class="w-full h-fit">
             <mat-label>Priority</mat-label>
             <mat-select [(ngModel)]="priority" required>
@@ -63,6 +77,19 @@ import { categoryETAs } from '../../../core/data/mock-data';
               <mat-option value="urgent">Critical (Emergency)</mat-option>
             </mat-select>
             <mat-icon matSuffix [class.text-red-500]="priority === 'urgent'" class="text-gray-400">priority_high</mat-icon>
+          </mat-form-field>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <mat-form-field appearance="outline" class="w-full h-fit">
+            <mat-label>Assign To</mat-label>
+            <mat-select [(ngModel)]="selectedAssignedTo">
+              <mat-option value="">Auto Assign</mat-option>
+              <mat-option *ngFor="let staff of employees" [value]="staff.id">
+                {{ staff.label }}
+              </mat-option>
+            </mat-select>
+            <mat-icon matSuffix class="text-gray-400">person</mat-icon>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full h-fit">
@@ -140,12 +167,14 @@ import { categoryETAs } from '../../../core/data/mock-data';
     }
   `]
 })
-export class CreateIssueDialogComponent {
+export class CreateIssueDialogComponent implements OnInit {
   title = '';
   description = '';
   category: string = 'general';
-  priority: Issue['priority'] = 'medium';
+  priority: Issue['priority'] = 'low';
   roomNumber = '';
+  selectedStatusId = 1;
+  selectedAssignedTo = '';
   loading = false;
 
   availableCategories = [
@@ -154,13 +183,53 @@ export class CreateIssueDialogComponent {
     'Storage', 'Barn', 'Carpet', 'Floor', 'Ceiling', 'Shelves', 'Cabinets', 'Bookcases'
   ];
 
+  statusOptions: Array<{ currentStatusId: number; title: string; name: string; description: string }> = [];
+  employees: Array<{ id: string; label: string; email: string }> = [];
+
   constructor(
     public dialogRef: MatDialogRef<CreateIssueDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { user: any }
+    @Inject(MAT_DIALOG_DATA) public data: { user: any },
+    private issueService: IssueService
   ) {
     if (data.user) {
       this.roomNumber = data.user.roomNumber || data.user.apartment || '';
     }
+  }
+
+  ngOnInit(): void {
+    const clientId = this.data.user?.clientId || 'KANHA1';
+    this.loadMetadata(clientId);
+  }
+
+  loadMetadata(clientId: string): void {
+    this.issueService.getComplaintCategories().subscribe(categories => {
+      if (categories && categories.length > 0) {
+        this.availableCategories = categories;
+        this.category = categories[0] || this.category;
+      }
+    });
+
+    this.issueService.getComplaintStatuses(clientId).subscribe(statuses => {
+      if (statuses && statuses.length > 0) {
+        this.statusOptions = statuses;
+        // Try to find "Todo" status as default
+        const todoStatus = statuses.find(s => s.name.toLowerCase() === 'todo' || s.title.toLowerCase() === 'todo');
+        this.selectedStatusId = todoStatus ? todoStatus.currentStatusId : statuses[0].currentStatusId;
+      }
+    });
+
+    this.issueService.getEmployees(clientId).subscribe(employees => {
+      this.employees = employees.map(employee => ({
+        id: employee.id,
+        label: employee.name?.trim() ? employee.name : employee.email || employee.userId,
+        email: employee.email
+      }));
+    });
+  }
+
+  getSelectedStatusLabel(): string {
+    const selected = this.statusOptions.find(status => status.currentStatusId === this.selectedStatusId);
+    return selected?.title || selected?.name || 'Open';
   }
 
   getETA(): string {
@@ -168,7 +237,7 @@ export class CreateIssueDialogComponent {
   }
 
   isValid(): boolean {
-    return !!(this.title.trim() && this.description.trim() && this.category && this.priority);
+    return !!(this.title.trim() && this.description.trim() && this.category && this.priority && this.selectedStatusId);
   }
 
   onCancel(): void {
@@ -179,16 +248,20 @@ export class CreateIssueDialogComponent {
     if (!this.isValid()) return;
     this.loading = true;
 
-    // Simulate small delay for UX if needed, or just close
-    const issuePayload: Partial<Issue> = {
+    const selectedStatus = this.statusOptions.find(status => status.currentStatusId === this.selectedStatusId);
+    const issuePayload: any = {
       title: this.title,
       description: this.description,
       category: this.category,
       priority: this.priority,
+      roomNumber: this.roomNumber,
       apartment: this.roomNumber,
       notes: [`Initial report by resident via dashboard`],
-      status: 'open',
-      statusId: 1
+      status: (selectedStatus?.name || selectedStatus?.title || 'Open').toString().toLowerCase(),
+      statusId: this.selectedStatusId,
+      assignedTo: this.selectedAssignedTo || '',
+      customerId: this.data.user?.customerId || this.data.user?.id,
+      reportedBy: this.data.user?.name || ''
     };
 
     this.dialogRef.close(issuePayload);

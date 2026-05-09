@@ -1,19 +1,23 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MatIconModule } from '@angular/material/icon';
-import { MatSelectModule } from '@angular/material/select';
-import { MatInputModule } from '@angular/material/input';
+import { MatTableModule } from '@angular/material/table';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { Observable } from 'rxjs';
-import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge.component';
-import { PriorityBadgeComponent } from '../../../shared/components/priority-badge/priority-badge.component';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatIconModule } from '@angular/material/icon';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { Observable, forkJoin } from 'rxjs';
 import { IssueService } from '../../../core/services/issue.service';
 import { StaffService } from '../../../core/services/staff.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { Issue, Staff } from '../../../core/models';
 import { ToastService } from '../../../core/services/toast.service';
 import { formatDistanceToNow } from 'date-fns';
 import { categoryLabels } from '../../../core/data/mock-data';
+import { IssueDetailDialogComponent } from '../../../shared/components/issue-detail-dialog/issue-detail-dialog.component';
 
 @Component({
   selector: 'app-admin-issues',
@@ -21,125 +25,233 @@ import { categoryLabels } from '../../../core/data/mock-data';
   imports: [
     CommonModule,
     FormsModule,
-    MatIconModule,
-    MatSelectModule,
+    MatTableModule,
+    MatFormFieldModule,
     MatInputModule,
-    MatFormFieldModule,
-    MatFormFieldModule,
+    MatSelectModule,
+    MatIconModule,
+    MatChipsModule,
+    MatButtonModule,
+    MatDialogModule
   ],
   templateUrl: './admin-issues.component.html',
   styleUrls: ['./admin-issues.component.scss']
 })
 export class AdminIssuesComponent implements OnInit {
-  issues$!: Observable<Issue[]>;
-  staff$!: Observable<Staff[]>;
-  categoryLabels = categoryLabels;
-  allIssues: Issue[] = [];
-  filteredIssues: Issue[] = [];
+  public issues$!: Observable<Issue[]>;
+  public staffOptions: { label: string, value: string }[] = [];
+  public categoryLabels = categoryLabels;
+  public allIssues: Issue[] = [];
+  public filteredIssues: Issue[] = [];
 
-  searchQuery = '';
-  filterStatus = 'all';
-  filterPriority = 'all';
+  public searchQuery = '';
+  public filterStatus = 'all';
+  public filterPriority = 'all';
 
-  constructor(
-    private issueService: IssueService,
-    private staffService: StaffService,
-    private toast: ToastService
-  ) { }
+  public statusOptions: { label: string, value: string }[] = [{ label: 'All Status', value: 'all' }];
+  public priorityOptions = [
+    { label: 'All Priority', value: 'all' },
+    { label: 'Low', value: 'low' },
+    { label: 'Medium', value: 'medium' },
+    { label: 'High', value: 'high' },
+    { label: 'Urgent', value: 'urgent' }
+  ];
+
+  public tableStatusOptions: { label: string, value: string }[] = [];
+  public tablePriorityOptions = [
+    { label: 'Low', value: 'low' },
+    { label: 'Medium', value: 'medium' },
+    { label: 'High', value: 'high' },
+    { label: 'Urgent', value: 'urgent' }
+  ];
+
+  public displayedColumns: string[] = ['issue', 'resident', 'priority', 'status', 'assignedTo', 'escalateTo', 'createdAt'];
+
+  private readonly issueService = inject(IssueService);
+  private readonly staffService = inject(StaffService);
+  private readonly authService = inject(AuthService);
+  private readonly toastService = inject(ToastService);
+  private readonly dialog = inject(MatDialog);
+
+  constructor() { }
 
   ngOnInit(): void {
     this.loadData();
   }
 
-  loadData(): void {
-    this.issues$ = this.issueService.getIssues();
-    this.staff$ = this.staffService.getStaff();
+  public loadData(): void {
+    const clientId = 'KANHA1'; // Ideally from auth service
+    
+    // Synchronize primary data streams
+    forkJoin({
+      issues: this.issueService.getIssues(),
+      employees: this.issueService.getEmployees(clientId)
+    }).subscribe({
+      next: ({ issues, employees }) => {
+        // 1. Process Issues
+        this.allIssues = issues;
+        this.onSearch();
 
-    this.issues$.subscribe(issues => {
-      this.allIssues = issues;
-      this.onSearch();
+        // 2. Process Statuses (Pull from Service Cache to avoid redundant API call)
+        const statuses = this.issueService.getStatusCache();
+        if (statuses && statuses.length > 0) {
+          const mappedStatuses = statuses.map((s: any) => ({
+            label: s.description,
+            value: s.currentStatusId
+          }));
+          this.statusOptions = [{ label: 'All Status', value: 'all' }, ...mappedStatuses];
+          this.tableStatusOptions = mappedStatuses;
+        }
+
+        // 3. Process Staff Options (using userId as requested)
+        const options = employees.map((e: any) => ({
+          label: e.name || e.email || e.userId || 'Unknown Staff',
+          value: e.userId || e.id
+        }));
+
+        const existingIds = new Set(options.map((o: any) => o.value));
+        
+        // Inject assigned/escalated staff from live issues
+        this.allIssues.forEach(issue => {
+          if (issue.assignedTo && !existingIds.has(issue.assignedTo)) {
+            options.push({ label: issue.assignedToName || 'Staff', value: issue.assignedTo });
+            existingIds.add(issue.assignedTo);
+          }
+          if (issue.escalateTo && !existingIds.has(issue.escalateTo)) {
+            options.push({ label: issue.escalateToName || 'Staff', value: issue.escalateTo });
+            existingIds.add(issue.escalateTo);
+          }
+        });
+
+        this.staffOptions = [{ label: 'Unassigned', value: '' }, ...options];
+      },
+      error: (err) => {
+        console.error('Failed to load admin dashboard data:', err);
+        this.toastService.error('Failed to load live data');
+      }
     });
   }
 
-  onSearch(): void {
+  public onSearch(): void {
+    const query = (this.searchQuery || '').toLowerCase().trim();
+    
     this.filteredIssues = this.allIssues.filter(issue => {
-      const matchesSearch = !this.searchQuery ||
-        issue.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-        issue.description?.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-        issue.residentName?.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-        issue.apartment?.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-        issue.category?.toLowerCase().includes(this.searchQuery.toLowerCase());
+      // 1. Robust Search Matching
+      const matchesSearch = !query ||
+        (issue.title || '').toLowerCase().includes(query) ||
+        (issue.description || '').toLowerCase().includes(query) ||
+        (issue.residentName || '').toLowerCase().includes(query) ||
+        (issue.apartment || '').toLowerCase().includes(query) ||
+        (issue.category || '').toLowerCase().includes(query);
 
-      const matchesStatus = this.filterStatus === 'all' || issue.status === this.filterStatus;
-      const matchesPriority = this.filterPriority === 'all' || issue.priority === this.filterPriority;
+      // 2. Normalized Status Matching using Numerical IDs
+      const matchesStatus = this.filterStatus === 'all' || 
+                           issue.statusId === Number(this.filterStatus);
+
+      // 3. Priority Matching
+      const matchesPriority = this.filterPriority === 'all' || 
+                             issue.priority === this.filterPriority;
 
       return matchesSearch && matchesStatus && matchesPriority;
     });
   }
 
-  formatDate(date: string): string {
-    if (!date) return 'just now';
-    try {
-      return formatDistanceToNow(new Date(date), { addSuffix: true });
-    } catch (e) {
-      return 'just now';
-    }
+  public formatDate(date: string): string {
+    if (!date) return 'N/A';
+    const d = new Date(date);
+    return d.toLocaleDateString('en-GB', { 
+      day: '2-digit', 
+      month: 'short', 
+      hour: '2-digit', 
+      minute: '2-digit',
+      hour12: false 
+    });
   }
 
-  getCategoryLabel(category: string): string {
+  public getCategoryLabel(category: string): string {
     return this.categoryLabels[category as keyof typeof categoryLabels] || category;
   }
 
-  getCategoryIcon(category: string): string {
+  public getCategoryIcon(category: string): string {
     const iconMap: Record<string, string> = {
-      'plumbing': 'water_drop',
-      'electrical': 'bolt',
+      'plumbing': 'plumbing',
+      'electrical': 'electrical_services',
       'hvac': 'ac_unit',
-      'structural': 'foundation',
-      'pest': 'pest_control',
+      'structural': 'home',
+      'pest': 'bug_report',
       'cleaning': 'cleaning_services',
-      'security': 'security',
+      'security': 'shield',
       'appliance': 'kitchen'
     };
-    return iconMap[category?.toLowerCase()] || 'build';
+    return iconMap[category?.toLowerCase()] || 'settings';
   }
 
-  getStaffName(staffId: string | undefined, staffList: Staff[]): string {
-    if (!staffId) return 'Unassigned';
-    const staff = staffList.find(s => s.id === staffId);
-    return staff ? staff.name : 'Unknown';
-  }
-
-  updateStatus(issue: Issue, newStatus: string): void {
+  public updateStatus(issue: Issue, newStatus: string): void {
     this.issueService.updateStatus(issue.id, newStatus as any).subscribe({
-      next: () => {
-        this.toast.success('Status updated successfully');
+      next: (updatedIssue) => {
+        issue.status = updatedIssue.status;
+        issue.statusId = updatedIssue.statusId;
+        this.toastService.success('Status updated successfully');
+        this.onSearch();
       },
       error: () => {
-        this.toast.error('Failed to update status');
+        this.toastService.error('Failed to update status');
       }
     });
   }
 
-  updatePriority(issue: Issue, newPriority: string): void {
+  public updatePriority(issue: Issue, newPriority: string): void {
     this.issueService.updatePriority(issue.id, newPriority as any).subscribe({
-      next: () => {
-        this.toast.success('Priority updated successfully');
+      next: (updatedIssue) => {
+        issue.priority = updatedIssue.priority;
+        this.toastService.success('Priority updated successfully');
+        this.onSearch();
       },
       error: () => {
-        this.toast.error('Failed to update priority');
+        this.toastService.error('Failed to update priority');
       }
     });
   }
 
-  assignStaff(issue: Issue, staffId: string): void {
+  public assignStaff(issue: Issue, staffId: string): void {
     this.issueService.assignStaff(issue.id, staffId).subscribe({
-      next: () => {
-        this.toast.success('Staff assigned successfully');
+      next: (updatedIssue) => {
+        issue.assignedTo = updatedIssue.assignedTo;
+        issue.assignedToName = updatedIssue.assignedToName;
+        this.toastService.success('Staff assigned successfully');
+        this.onSearch();
       },
       error: () => {
-        this.toast.error('Failed to assign staff');
+        this.toastService.error('Failed to assign staff');
       }
+    });
+  }
+
+  public onUpdateEscalation(issue: Issue, staffId: string): void {
+    this.issueService.escalateIssue(issue.id, staffId).subscribe({
+      next: (updatedIssue) => {
+        issue.escalateTo = updatedIssue.escalateTo;
+        issue.escalateToName = updatedIssue.escalateToName;
+        this.toastService.success('Issue escalated successfully');
+        this.onSearch();
+      },
+      error: () => {
+        this.toastService.error('Failed to escalate issue');
+      }
+    });
+  }
+
+  public onViewIssueDetail(issue: Issue): void {
+    this.dialog.open(IssueDetailDialogComponent, {
+      width: '800px',
+      maxWidth: '95vw',
+      panelClass: 'premium-dialog',
+      data: {
+        issue,
+        user: this.authService.getCurrentUser()
+      }
+    }).afterClosed().subscribe(() => {
+      this.loadData();
     });
   }
 }

@@ -5,17 +5,16 @@ import { Router, RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { ButtonComponent } from '../../../shared/components/button/button.component';
 import { ToastService } from '../../../core/services/toast.service';
-
+import { WelcomeComponent } from '../../welcome/welcome.component';
 @Component({
     selector: 'app-forgot-password',
     standalone: true,
     imports: [
-        CommonModule,
-        ReactiveFormsModule,
-        MatIconModule,
-        // RouterLink,
-        // ButtonComponent
-    ],
+    CommonModule,
+    ReactiveFormsModule,
+    MatIconModule,
+    WelcomeComponent
+],
     templateUrl: './forgot-password.component.html',
     styleUrls: ['./forgot-password.component.scss']
 })
