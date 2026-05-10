@@ -243,14 +243,15 @@ export class AdminIssuesComponent implements OnInit {
 
   public onViewIssueDetail(issue: Issue): void {
     this.dialog.open(IssueDetailDialogComponent, {
-      width: '800px',
+      width: '650px',
       maxWidth: '95vw',
-      panelClass: 'premium-dialog',
+      panelClass: 'custom-dialog-container',
       data: {
         issue,
         user: this.authService.getCurrentUser()
       }
     }).afterClosed().subscribe(() => {
+      this.issueService.refreshIssues();
       this.loadData();
     });
   }

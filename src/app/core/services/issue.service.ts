@@ -231,7 +231,7 @@ export class IssueService {
       notes: allNotes
     };
 
-    return this.http.put<any>(
+    return this.http.post<any>(
       `${this.API_URL}/complaint-service/complaint/update/${id}`,
       body,
       { headers: this.authService.getAuthHeaders() }
@@ -277,6 +277,54 @@ export class IssueService {
       catchError(error => {
         console.error('Failed to update complaint status via API:', error);
         return this.updateIssue(id, { status });
+      })
+    );
+  }
+
+  updateNotes(id: string, notes: string[]): Observable<any> {
+    const user = this.authService.getCurrentUser();
+    const currentIssues = this.issuesSubject.value;
+    const issue = currentIssues.find(i => i.id === id);
+    
+    const body = {
+      statusId: issue ? (issue.statusId || this.mapStatusToStatusId(issue.status)) : 1,
+      category: issue ? this.capitalizeFirst(issue.category || 'General') : 'General',
+      updatedBy: user?.id || user?.customerId || '',
+      escalateTo: issue?.escalateTo || '',
+      notes: notes
+    };
+
+    return this.http.post(
+      `${this.API_URL}/complaint-service/complaint/update/${id}`,
+      body,
+      { headers: this.authService.getAuthHeaders(), responseType: 'text' }
+    ).pipe(
+      map(responseText => {
+        let response: any = {};
+        try {
+          response = JSON.parse(responseText);
+        } catch (e) {
+          response = { message: responseText };
+        }
+
+        // Also update local cache
+        if (issue) {
+          const issueIndex = currentIssues.findIndex(i => i.id === id);
+          if (issueIndex !== -1) {
+            const updatedIssue = {
+              ...currentIssues[issueIndex],
+              notes: [...currentIssues[issueIndex].notes, ...notes]
+            };
+            const newIssues = [...currentIssues];
+            newIssues[issueIndex] = updatedIssue;
+            this.issuesSubject.next(newIssues);
+          }
+        }
+        return response;
+      }),
+      catchError(error => {
+        console.error('Failed to update notes via API:', error);
+        return throwError(() => error);
       })
     );
   }
@@ -579,7 +627,12 @@ export class IssueService {
         escalateToName: (complaint.escalateToDetails?.name === 'UNKNOWN' || !complaint.escalateToDetails?.name) ? 'None' : complaint.escalateToDetails.name,
         comments: [],
         images: complaint.images || [],
-        isCommonArea: false
+        isCommonArea: false,
+        statusUpdates: complaint.statusUpdates || [],
+        userDetails: complaint.userDetails || null,
+        assignedToDetails: complaint.assignedToDetails || null,
+        escalateToDetails: complaint.escalateToDetails || null,
+        reportedByDetails: complaint.reportedByDetails || null
       };
     });
   }

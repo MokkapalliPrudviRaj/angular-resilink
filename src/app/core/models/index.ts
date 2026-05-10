@@ -34,6 +34,11 @@ export interface Issue {
   assignedToName?: string;
   escalateToName?: string;
   isCommonArea?: boolean;
+  statusUpdates?: any[];
+  userDetails?: any;
+  assignedToDetails?: any;
+  escalateToDetails?: any;
+  reportedByDetails?: any;
 }
 
 export interface Comment {
