@@ -156,6 +156,74 @@ export class AdminIssuesComponent implements OnInit {
     });
   }
 
+  public exportToExcel(): void {
+    const rows = this.filteredIssues;
+    if (!rows.length) return;
+
+    const headers = [
+      'Issue ID', 'Title', 'Description', 'Category',
+      'Resident', 'Room / Apt', 'Priority', 'Status',
+      'Assigned To', 'Escalate To', 'Reported At', 'Last Updated'
+    ];
+
+    const escape = (v: any): string => {
+      const s = (v == null ? '' : String(v)).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+      return s;
+    };
+
+    const headerXml = headers.map(h => `<Cell ss:StyleID="header"><Data ss:Type="String">${escape(h)}</Data></Cell>`).join('');
+
+    const dataXml = rows.map(issue => {
+      const cells = [
+        issue.id,
+        issue.title,
+        issue.description,
+        issue.category,
+        issue.residentName || 'Unknown',
+        issue.apartment || 'N/A',
+        issue.priority,
+        issue.status,
+        issue.assignedToName || 'Unassigned',
+        issue.escalateToName || 'None',
+        issue.createdAt ? new Date(issue.createdAt).toLocaleString('en-GB') : '',
+        issue.updatedAt ? new Date(issue.updatedAt).toLocaleString('en-GB') : ''
+      ].map(v => `<Cell ss:StyleID="cell"><Data ss:Type="String">${escape(v)}</Data></Cell>`).join('');
+      return `<Row>${cells}</Row>`;
+    }).join('');
+
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+  xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">
+  <Styles>
+    <Style ss:ID="header">
+      <Font ss:Bold="1" ss:Size="11" ss:Color="#FFFFFF"/>
+      <Interior ss:Color="#5048E5" ss:Pattern="Solid"/>
+      <Alignment ss:Horizontal="Center" ss:Vertical="Center" ss:WrapText="1"/>
+    </Style>
+    <Style ss:ID="cell">
+      <Alignment ss:Vertical="Center" ss:WrapText="0"/>
+      <Interior ss:Color="#FFFFFF" ss:Pattern="Solid"/>
+    </Style>
+  </Styles>
+  <Worksheet ss:Name="Issues">
+    <Table>
+      <Row>${headerXml}</Row>
+      ${dataXml}
+    </Table>
+  </Worksheet>
+</Workbook>`;
+
+    const blob = new Blob([xml], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    const date = new Date().toISOString().slice(0, 10);
+    a.href     = url;
+    a.download = `issues-export-${date}.xls`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   public formatDate(date: string): string {
     if (!date) return 'N/A';
     const d = new Date(date);

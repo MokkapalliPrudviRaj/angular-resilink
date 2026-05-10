@@ -71,25 +71,25 @@ import { ToastService } from '../../../core/services/toast.service';
             {{ issue?.title }}
           </h1>
 
-          <div class="flex flex-wrap items-center gap-3 text-sm">
+          <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
 
-            <div class="flex items-center gap-1 text-slate-500">
-              <mat-icon class="!h-4 !w-4 !text-base">person</mat-icon>
-              {{ issue?.userDetails?.name }}
+            <div class="flex items-center gap-1.5 text-slate-500">
+              <mat-icon class="!h-4 !w-4 shrink-0" style="font-size:16px;line-height:1">person</mat-icon>
+              <span>{{ issue?.residentName || issue?.userDetails?.name || 'Unknown' }}</span>
             </div>
 
-            <div class="h-1 w-1 rounded-full bg-slate-300"></div>
+            <span class="h-1 w-1 rounded-full bg-slate-300 shrink-0"></span>
 
-            <div class="flex items-center gap-1 text-slate-500">
-              <mat-icon class="!h-4 !w-4 !text-base">home</mat-icon>
-              {{ issue?.roomNumber }}
+            <div class="flex items-center gap-1.5 text-slate-500">
+              <mat-icon class="!h-4 !w-4 shrink-0" style="font-size:16px;line-height:1">home</mat-icon>
+              <span>{{ issue?.apartment || issue?.roomNumber || 'C-NA' }}</span>
             </div>
 
-            <div class="h-1 w-1 rounded-full bg-slate-300"></div>
+            <span class="h-1 w-1 rounded-full bg-slate-300 shrink-0"></span>
 
-            <div class="flex items-center gap-1 text-slate-500">
-              <mat-icon class="!h-4 !w-4 !text-base">schedule</mat-icon>
-              {{ formatDate(issue?.createdAt) }}
+            <div class="flex items-center gap-1.5 text-slate-500">
+              <mat-icon class="!h-4 !w-4 shrink-0" style="font-size:16px;line-height:1">schedule</mat-icon>
+              <span>{{ formatDate(issue?.createdAt) }}</span>
             </div>
 
           </div>

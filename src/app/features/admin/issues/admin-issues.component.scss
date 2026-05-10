@@ -80,6 +80,61 @@
   }
 }
 
+/* Header actions group: stats badge + export button */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.export-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 1.5rem;
+  height: 48px;
+  background: linear-gradient(135deg, #5048e5, #6366f1);
+  color: white;
+  border: none;
+  border-radius: 9999px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 0.875rem;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(80, 72, 229, 0.3);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+
+  mat-icon {
+    font-size: 1.1rem;
+    width: 1.1rem;
+    height: 1.1rem;
+  }
+
+  .export-count {
+    font-size: 0.75rem;
+    opacity: 0.85;
+    font-weight: 600;
+  }
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(80, 72, 229, 0.4);
+    background: linear-gradient(135deg, #4338ca, #5048e5);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+}
+
 /* Controls Bar */
 .controls-bar {
   display: flex;

@@ -5,10 +5,18 @@
       <h1>Issue Management</h1>
       <p>Manage, assign, and track all maintenance requests</p>
     </div>
-    <div class="stats-badge">
-      <mat-icon>analytics</mat-icon>
-      <span class="count">{{ allIssues.length }}</span>
-      <span class="label">Tickets</span>
+    <div class="header-actions">
+      <div class="stats-badge">
+        <mat-icon>analytics</mat-icon>
+        <span class="count">{{ filteredIssues.length }}</span>
+        <span class="label">{{ filteredIssues.length === allIssues.length ? 'Total Tickets' : 'Filtered' }}</span>
+      </div>
+      <button class="export-btn" (click)="exportToExcel()" [disabled]="filteredIssues.length === 0"
+        title="Download current view as Excel">
+        <mat-icon>download</mat-icon>
+        Export Excel
+        <span class="export-count" *ngIf="filteredIssues.length > 0">({{ filteredIssues.length }})</span>
+      </button>
     </div>
   </div>
 

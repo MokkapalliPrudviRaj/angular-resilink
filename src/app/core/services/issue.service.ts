@@ -27,7 +27,7 @@ export class IssueService {
 
     const user = this.authService.getCurrentUser();
     const clientId = user?.clientId || 'KANHA1';
-    
+
     this.issuesCached$ = this.getComplaintStatuses(clientId).pipe(
       switchMap(() => this.http.get<any>(`${this.API_URL}/complaint-service/complaints/client/${clientId}?t=${new Date().getTime()}`)),
       map(response => {
@@ -133,7 +133,7 @@ export class IssueService {
       customerId: customerId,
       title: issueData.title,
       category: this.titleCase(issueData.category),
-      roomNumber: issueData.apartment || user.roomNumber || user.apartment || 'N/A',
+      roomNumber: user.roomNumber || 'C-NA',
       description: issueData.description,
       notes: issueData.notes && issueData.notes.length > 0 ? issueData.notes : [`Reported by ${user.name}`],
       statusId: issueData.statusId || this.mapStatusToStatusId(issueData.status),
@@ -222,7 +222,7 @@ export class IssueService {
     const category = this.getIssueCategoryById(id);
     const baseNote = `Status changed to ${status}`;
     const allNotes = notes.length > 0 ? notes : [baseNote];
-    
+
     const body = {
       statusId,
       category: this.capitalizeFirst(category),
@@ -285,7 +285,7 @@ export class IssueService {
     const user = this.authService.getCurrentUser();
     const currentIssues = this.issuesSubject.value;
     const issue = currentIssues.find(i => i.id === id);
-    
+
     const body = {
       statusId: issue ? (issue.statusId || this.mapStatusToStatusId(issue.status)) : 1,
       category: issue ? this.capitalizeFirst(issue.category || 'General') : 'General',
@@ -347,7 +347,7 @@ export class IssueService {
         // Find and update the local issue state
         const currentIssues = this.issuesSubject.value;
         const index = currentIssues.findIndex(i => i.id === id);
-        
+
         if (index !== -1) {
           const updatedIssue = {
             ...currentIssues[index],
@@ -355,13 +355,13 @@ export class IssueService {
             // Safe navigation for response and assignedToDetails
             assignedToName: response?.assignedToDetails?.name || currentIssues[index].assignedToName
           };
-          
+
           const newIssues = [...currentIssues];
           newIssues[index] = updatedIssue;
           this.issuesSubject.next(newIssues);
           return updatedIssue;
         }
-        
+
         // If not found in local list, map from response
         const mapped = this.mapComplaintsToIssues([response]);
         return mapped[0];
@@ -385,7 +385,7 @@ export class IssueService {
       map(response => {
         const currentIssues = this.issuesSubject.value;
         const index = currentIssues.findIndex(i => i.id === id);
-        
+
         if (index !== -1) {
           const updatedIssue = {
             ...currentIssues[index],
@@ -393,13 +393,13 @@ export class IssueService {
             // Safe navigation for response and escalateToDetails
             escalateToName: response?.escalateToDetails?.name || currentIssues[index].escalateToName
           };
-          
+
           const newIssues = [...currentIssues];
           newIssues[index] = updatedIssue;
           this.issuesSubject.next(newIssues);
           return updatedIssue;
         }
-        
+
         const mapped = this.mapComplaintsToIssues([response]);
         return mapped[0];
       }),
@@ -480,13 +480,13 @@ export class IssueService {
 
   private mapStatusToStatusId(status: string): number {
     if (this.statusCache.length > 0) {
-      const match = this.statusCache.find(s => 
-        s.name.toLowerCase() === status.toLowerCase() || 
+      const match = this.statusCache.find(s =>
+        s.name.toLowerCase() === status.toLowerCase() ||
         s.title.toLowerCase() === status.toLowerCase()
       );
       if (match) return match.currentStatusId;
     }
-    
+
     const statusMap: Record<string, number> = {
       'open': 1, 'in-progress': 2, 'resolved': 3, 'closed': 4
     };
@@ -519,16 +519,16 @@ export class IssueService {
       };
       return statusMap[statusId] || 'Todo';
     }
-    
+
     // Exact match using currentStatusId from API
     const matchedStatus = this.statusCache.find(s => s.currentStatusId === statusId);
-    
+
     // If statusId is 0, default to 'Todo' or first status
     if (statusId === 0) {
       const todoStatus = this.statusCache.find(s => s.currentStatusId === 1) || this.statusCache[0];
       return todoStatus ? todoStatus.description : 'Todo';
     }
-    
+
     return matchedStatus ? matchedStatus.description : 'Todo';
   }
 
@@ -556,7 +556,7 @@ export class IssueService {
     return complaints.map(complaint => {
       // Unified statusId resolution
       const statusId = complaint.statusId !== undefined ? Number(complaint.statusId) : 1;
-      
+
       // Flatten notes from status updates if top-level notes are missing
       let notes = complaint.notes || [];
       if (notes.length === 0 && complaint.statusUpdates && Array.isArray(complaint.statusUpdates)) {
@@ -572,38 +572,38 @@ export class IssueService {
       const residentName = complaint.userDetails?.name || 'Resident';
 
       // Direct Staff Name extraction with "UNKNOWN" filter
-      const assignedToName = 
-        (complaint.assignedToDetails?.name && complaint.assignedToDetails.name !== 'UNKNOWN') 
-        ? complaint.assignedToDetails.name 
-        : '';
-        
-      const escalateToName = 
-        (complaint.escalateToDetails?.name && complaint.escalateToDetails.name !== 'UNKNOWN') 
-        ? complaint.escalateToDetails.name 
-        : '';
+      const assignedToName =
+        (complaint.assignedToDetails?.name && complaint.assignedToDetails.name !== 'UNKNOWN')
+          ? complaint.assignedToDetails.name
+          : '';
+
+      const escalateToName =
+        (complaint.escalateToDetails?.name && complaint.escalateToDetails.name !== 'UNKNOWN')
+          ? complaint.escalateToDetails.name
+          : '';
 
       // Robust Apartment detection
-      const apartment = 
-        complaint.roomNumber || 
-        complaint.apartmentNumber || 
-        complaint.flatNumber || 
+      const apartment =
+        complaint.roomNumber ||
+        complaint.apartmentNumber ||
+        complaint.flatNumber ||
         'N/A';
 
       // Status mapping - handle strings or objects
       let statusRaw = complaint.status || this.mapStatusIdToStatus(statusId);
-      
+
       if (typeof statusRaw === 'object' && statusRaw !== null) {
         statusRaw = statusRaw.name || statusRaw.title || statusRaw.label;
       }
       const status = String(statusRaw || 'open').toLowerCase().replace(/_/g, '-');
 
       // Robust Assigned To detection
-      const assignedTo = 
-        complaint.assignedToDetails?.id || 
-        complaint.assignedToId || 
+      const assignedTo =
+        complaint.assignedToDetails?.id ||
+        complaint.assignedToId ||
         complaint.assignedStaffId ||
         complaint.staffId ||
-        complaint.assignedTo || 
+        complaint.assignedTo ||
         '';
 
       return {
