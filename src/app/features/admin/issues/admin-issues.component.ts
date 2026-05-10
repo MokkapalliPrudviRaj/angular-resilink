@@ -250,9 +250,11 @@ export class AdminIssuesComponent implements OnInit {
         issue,
         user: this.authService.getCurrentUser()
       }
-    }).afterClosed().subscribe(() => {
-      this.issueService.refreshIssues();
-      this.loadData();
+    }).afterClosed().subscribe((result) => {
+      if (result) {
+        this.issueService.refreshIssues();
+        this.loadData();
+      }
     });
   }
 }

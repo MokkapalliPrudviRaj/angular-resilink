@@ -270,8 +270,10 @@ export class DashboardComponent implements OnInit {
         issue,
         user: this.authService.getCurrentUser()
       }
-    }).afterClosed().subscribe(() => {
-      this.loadIssues(); // Refresh if notes were added
+    }).afterClosed().subscribe((result) => {
+      if (result) {
+        this.loadIssues(); // Refresh if notes were added
+      }
     });
   }
 }
