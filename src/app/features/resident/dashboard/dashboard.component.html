@@ -12,7 +12,7 @@
           </div>
           <div class="hidden sm:block">
             <h1 class="text-xl font-extrabold tracking-tight text-gray-900 group-hover:text-primary transition-colors">
-              ResiLink</h1>
+              Hridaya Connect</h1>
             <p class="text-[10px] font-bold uppercase tracking-wider text-gray-400">
               {{ user.roomNumber || user.apartment || 'RESIDENT DASHBOARD' }}
             </p>
@@ -390,8 +390,7 @@
               <div class="flex items-center gap-2 text-xs">
                 <mat-icon class="scale-75 text-rose-400">escalator_warning</mat-icon>
                 <span class="font-bold text-gray-400 w-24 shrink-0">Escalate To</span>
-                <span class="font-bold"
-                  [class.text-rose-600]="issue.escalateToName && issue.escalateToName !== 'None'"
+                <span class="font-bold" [class.text-rose-600]="issue.escalateToName && issue.escalateToName !== 'None'"
                   [class.text-gray-300]="!issue.escalateToName || issue.escalateToName === 'None'">
                   {{ issue.escalateToName || 'None' }}
                 </span>
@@ -403,7 +402,8 @@
                 <mat-icon class="scale-75">update</mat-icon>
                 <span>{{ formatDate(issue.updatedAt) }}</span>
               </div>
-              <div class="flex items-center gap-1.5 px-3 py-1 bg-gray-50 rounded-full text-[11px] font-black text-gray-400">
+              <div
+                class="flex items-center gap-1.5 px-3 py-1 bg-gray-50 rounded-full text-[11px] font-black text-gray-400">
                 <mat-icon class="scale-75 text-primary">priority_high</mat-icon>
                 <span class="uppercase">{{ issue.priority }}</span>
               </div>
@@ -488,10 +488,10 @@
             <p class="text-[10px] font-black uppercase opacity-80 mb-4 tracking-wider">Operations Summary</p>
             <h4 class="text-xl font-black mb-4 tracking-tight leading-snug">
               {{ stats.resolved > 0
-                ? stats.resolved + ' of ' + stats.total + ' issues resolved.'
-                : stats.total > 0
-                  ? stats.total + ' issues submitted, awaiting resolution.'
-                  : 'No issues reported yet. Submit your first request!' }}
+              ? stats.resolved + ' of ' + stats.total + ' issues resolved.'
+              : stats.total > 0
+              ? stats.total + ' issues submitted, awaiting resolution.'
+              : 'No issues reported yet. Submit your first request!' }}
             </h4>
             <div class="w-full bg-white/20 h-2 rounded-full overflow-hidden">
               <div class="bg-white h-full rounded-full shadow-lg transition-all duration-1000"

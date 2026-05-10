@@ -71,9 +71,9 @@ export class WelcomeComponent {
     {
       name: 'Jane Doe',
       role: 'Property Manager',
-      company: 'Sunset Apartments',
+      company: 'Sunset Organisations',
       avatar: 'JD',
-      review: 'ResiLink has transformed how we handle maintenance requests. Response times are down 50% and resident satisfaction is at an all-time high.',
+      review: 'Hridaya Connect has transformed how we handle maintenance requests. Response times are down 50% and resident satisfaction is at an all-time high.',
       rating: 5
     },
     {
@@ -111,7 +111,7 @@ export class WelcomeComponent {
     {
       name: 'James Park',
       role: 'Community Manager',
-      company: 'Oak Hill Apartments',
+      company: 'Oak Hill Organisations',
       avatar: 'JP',
       review: 'The kanban board view makes it so easy to see the status of all maintenance requests at a glance. Highly recommend!',
       rating: 5

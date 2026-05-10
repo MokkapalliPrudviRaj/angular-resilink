@@ -8,8 +8,7 @@
   <div class="absolute inset-0 bg-black/0 backdrop-blur-sm"></div>
 
   <!-- MODAL -->
-  <div
-    class="relative z-20 w-full max-w-[370px]
+  <div class="relative z-20 w-full max-w-[370px]
     rounded-[24px]
     border border-white/20
     bg-white/75
@@ -27,14 +26,12 @@
 
         <!-- TITLE -->
         <h2 class="text-[18px] font-bold text-[#5048e5] tracking-tight">
-          ResiLink
+          Hridaya Connect
         </h2>
       </div>
 
       <!-- CLOSE -->
-      <button
-        (click)="goHome()"
-        class="text-gray-400 hover:text-gray-700 transition-colors">
+      <button (click)="goHome()" class="text-gray-400 hover:text-gray-700 transition-colors">
 
         <mat-icon class="text-[18px]">
           close
@@ -54,40 +51,28 @@
 
         <p class="text-[12px] text-gray-500 font-medium leading-relaxed">
           {{
-            isSignup
-              ? 'Register to manage apartment maintenance'
-              : 'Log in to manage maintenance requests'
+          isSignup
+          ? 'Register to manage Organisation maintenance'
+          : 'Log in to manage maintenance requests'
           }}
         </p>
       </div>
 
       <!-- LOGIN FORM -->
-      <form
-        *ngIf="!isSignup"
-        [formGroup]="loginForm"
-        (ngSubmit)="onLogin()"
-        class="space-y-3 animate-fade-in-left">
+      <form *ngIf="!isSignup" [formGroup]="loginForm" (ngSubmit)="onLogin()" class="space-y-3 animate-fade-in-left">
 
         <!-- LOGIN METHOD -->
         <div class="flex p-1 bg-gray-100/80 rounded-[12px]">
 
-          <button
-            type="button"
-            (click)="setLoginMethod('username')"
-            [class.bg-white]="loginMethod === 'username'"
-            [class.shadow]="loginMethod === 'username'"
-            [class.text-indigo-600]="loginMethod === 'username'"
+          <button type="button" (click)="setLoginMethod('username')" [class.bg-white]="loginMethod === 'username'"
+            [class.shadow]="loginMethod === 'username'" [class.text-indigo-600]="loginMethod === 'username'"
             class="flex-1 py-1.5 text-[12px] font-bold text-gray-500 rounded-[10px] transition-all">
 
             Username
           </button>
 
-          <button
-            type="button"
-            (click)="setLoginMethod('email')"
-            [class.bg-white]="loginMethod === 'email'"
-            [class.shadow]="loginMethod === 'email'"
-            [class.text-indigo-600]="loginMethod === 'email'"
+          <button type="button" (click)="setLoginMethod('email')" [class.bg-white]="loginMethod === 'email'"
+            [class.shadow]="loginMethod === 'email'" [class.text-indigo-600]="loginMethod === 'email'"
             class="flex-1 py-1.5 text-[12px] font-bold text-gray-500 rounded-[10px] transition-all">
 
             Email
@@ -103,16 +88,11 @@
 
           <div class="relative">
 
-            <mat-icon
-              class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[16px]">
+            <mat-icon class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[16px]">
               person
             </mat-icon>
 
-            <input
-              type="text"
-              formControlName="username"
-              placeholder="Enter username"
-              class="w-full h-[42px]
+            <input type="text" formControlName="username" placeholder="Enter username" class="w-full h-[42px]
               pl-10 pr-3
               bg-white/70
               border border-[#e2e8f0]
@@ -140,17 +120,11 @@
 
             <div class="relative">
 
-              <mat-icon
-                class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[16px]">
+              <mat-icon class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[16px]">
                 business
               </mat-icon>
 
-              <input
-                type="text"
-                formControlName="clientId"
-                placeholder="KANHA1"
-                readonly
-                class="w-full h-[42px]
+              <input type="text" formControlName="clientId" placeholder="KANHA1" readonly class="w-full h-[42px]
                 pl-10 pr-3
                 bg-white/70
                 border border-[#e2e8f0]
@@ -176,16 +150,11 @@
 
             <div class="relative">
 
-              <mat-icon
-                class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[16px]">
+              <mat-icon class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[16px]">
                 email
               </mat-icon>
 
-              <input
-                type="email"
-                formControlName="email"
-                placeholder="name@example.com"
-                class="w-full h-[42px]
+              <input type="email" formControlName="email" placeholder="name@example.com" class="w-full h-[42px]
                 pl-10 pr-3
                 bg-white/70
                 border border-[#e2e8f0]
@@ -211,9 +180,7 @@
               Password
             </label>
 
-            <a
-              routerLink="/forgot-password"
-              class="text-[11px] font-bold text-[#5048e5] hover:underline">
+            <a routerLink="/forgot-password" class="text-[11px] font-bold text-[#5048e5] hover:underline">
 
               Forgot?
             </a>
@@ -221,16 +188,11 @@
 
           <div class="relative">
 
-            <mat-icon
-              class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[16px]">
+            <mat-icon class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[16px]">
               lock
             </mat-icon>
 
-            <input
-              [type]="showPassword ? 'text' : 'password'"
-              formControlName="password"
-              placeholder="••••••••"
-              class="w-full h-[42px]
+            <input [type]="showPassword ? 'text' : 'password'" formControlName="password" placeholder="••••••••" class="w-full h-[42px]
               pl-10 pr-10
               bg-white/70
               border border-[#e2e8f0]
@@ -244,9 +206,7 @@
               focus:ring-[3px]
               focus:ring-[#5048e5]/10" />
 
-            <button
-              type="button"
-              (click)="showPassword = !showPassword"
+            <button type="button" (click)="showPassword = !showPassword"
               class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
 
               <mat-icon class="text-[18px]">
@@ -257,10 +217,7 @@
         </div>
 
         <!-- LOGIN BUTTON -->
-        <button
-          type="submit"
-          [disabled]="loginForm.invalid || loading"
-          class="w-full h-[42px]
+        <button type="submit" [disabled]="loginForm.invalid || loading" class="w-full h-[42px]
           bg-[#5048e5]
           hover:bg-[#4338ca]
           text-white
@@ -280,11 +237,7 @@
       </form>
 
       <!-- SIGNUP FORM -->
-      <form
-        *ngIf="isSignup"
-        [formGroup]="signupForm"
-        (ngSubmit)="onSignup()"
-        class="space-y-3 animate-fade-in-right">
+      <form *ngIf="isSignup" [formGroup]="signupForm" (ngSubmit)="onSignup()" class="space-y-3 animate-fade-in-right">
 
         <!-- FULL NAME -->
         <div class="space-y-1.5">
@@ -295,16 +248,11 @@
 
           <div class="relative">
 
-            <mat-icon
-              class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[16px]">
+            <mat-icon class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[16px]">
               person
             </mat-icon>
 
-            <input
-              type="text"
-              formControlName="fullName"
-              placeholder="Enter your full name"
-              class="w-full h-[42px]
+            <input type="text" formControlName="fullName" placeholder="Enter your full name" class="w-full h-[42px]
               pl-10 pr-3
               bg-white/70
               border border-[#e2e8f0]
@@ -329,16 +277,11 @@
 
           <div class="relative">
 
-            <mat-icon
-              class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[16px]">
+            <mat-icon class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[16px]">
               email
             </mat-icon>
 
-            <input
-              type="email"
-              formControlName="email"
-              placeholder="name@example.com"
-              class="w-full h-[42px]
+            <input type="email" formControlName="email" placeholder="name@example.com" class="w-full h-[42px]
               pl-10 pr-3
               bg-white/70
               border border-[#e2e8f0]
@@ -363,16 +306,11 @@
 
           <div class="relative">
 
-            <mat-icon
-              class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[16px]">
+            <mat-icon class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[16px]">
               lock
             </mat-icon>
 
-            <input
-              [type]="showPassword ? 'text' : 'password'"
-              formControlName="password"
-              placeholder="••••••••"
-              class="w-full h-[42px]
+            <input [type]="showPassword ? 'text' : 'password'" formControlName="password" placeholder="••••••••" class="w-full h-[42px]
               pl-10 pr-10
               bg-white/70
               border border-[#e2e8f0]
@@ -391,10 +329,7 @@
 
 
         <!-- SIGNUP BUTTON -->
-        <button
-          type="submit"
-          [disabled]="signupForm.invalid || loading"
-          class="w-full h-[42px]
+        <button type="submit" [disabled]="signupForm.invalid || loading" class="w-full h-[42px]
           bg-[#5048e5]
           hover:bg-[#4338ca]
           text-white
@@ -420,9 +355,7 @@
 
           {{ isSignup ? 'Already have an account?' : "Don't have an account?" }}
 
-          <button
-            (click)="toggleMode()"
-            class="text-[#5048e5] font-bold hover:underline ml-1">
+          <button (click)="toggleMode()" class="text-[#5048e5] font-bold hover:underline ml-1">
 
             {{ isSignup ? 'Sign In' : 'Sign Up' }}
           </button>

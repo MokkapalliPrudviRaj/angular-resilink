@@ -549,35 +549,35 @@ export class CreateIssueDialogComponent implements OnInit {
     dot: string;
     activeClass: string;
   }> = [
-    {
-      value: 'low',
-      label: 'Low',
-      desc: 'Routine issue',
-      dot: 'bg-green-400',
-      activeClass: 'border-green-300 bg-green-50'
-    },
-    {
-      value: 'medium',
-      label: 'Medium',
-      desc: 'Standard issue',
-      dot: 'bg-yellow-400',
-      activeClass: 'border-yellow-300 bg-yellow-50'
-    },
-    {
-      value: 'high',
-      label: 'High',
-      desc: 'Urgent issue',
-      dot: 'bg-orange-400',
-      activeClass: 'border-orange-300 bg-orange-50'
-    },
-    {
-      value: 'urgent',
-      label: 'Critical',
-      desc: 'Emergency',
-      dot: 'bg-red-400',
-      activeClass: 'border-red-300 bg-red-50'
-    }
-  ];
+      {
+        value: 'low',
+        label: 'Low',
+        desc: 'Routine issue',
+        dot: 'bg-green-400',
+        activeClass: 'border-green-300 bg-green-50'
+      },
+      {
+        value: 'medium',
+        label: 'Medium',
+        desc: 'Standard issue',
+        dot: 'bg-yellow-400',
+        activeClass: 'border-yellow-300 bg-yellow-50'
+      },
+      {
+        value: 'high',
+        label: 'High',
+        desc: 'Urgent issue',
+        dot: 'bg-orange-400',
+        activeClass: 'border-orange-300 bg-orange-50'
+      },
+      {
+        value: 'urgent',
+        label: 'Critical',
+        desc: 'Emergency',
+        dot: 'bg-red-400',
+        activeClass: 'border-red-300 bg-red-50'
+      }
+    ];
 
   constructor(
     public dialogRef: MatDialogRef<CreateIssueDialogComponent>,
