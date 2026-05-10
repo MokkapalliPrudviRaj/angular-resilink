@@ -47,6 +47,9 @@ export class AdminOverviewComponent implements OnInit {
     urgent: 0
   };
 
+  avgResponseTime = 0;
+  avgResponseUnit = 'Days';
+
   categoryData: ChartData[] = [];
   priorityData: ChartData[] = [];
   statusData: ChartData[] = [];
@@ -58,7 +61,7 @@ export class AdminOverviewComponent implements OnInit {
     domain: ['#10b981', '#f59e0b', '#ef4444', '#7c3aed']
   };
   statusScheme: any = {
-    domain: ['#f59e0b', '#3b82f6', '#10b981', '#6b7280']
+    domain: ['#f59e0b', '#3b82f6', '#10b981', '#ef4444', '#6b7280', '#8b5cf6', '#ec4899']
   };
 
   constructor(
@@ -78,6 +81,7 @@ export class AdminOverviewComponent implements OnInit {
       this.calculateCategoryBreakdown(issues);
       this.calculatePriorityBreakdown(issues);
       this.calculateStatusBreakdown(issues);
+      this.calculateAvgResponseTime(issues);
 
       this.recentIssues = [...issues]
         .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
@@ -94,10 +98,16 @@ export class AdminOverviewComponent implements OnInit {
 
   calculateStats(issues: Issue[]): void {
     this.stats.total = issues.length;
-    this.stats.open = issues.filter(i => i.status === 'open').length;
-    this.stats.inProgress = issues.filter(i => i.status === 'in-progress').length;
-    this.stats.resolved = issues.filter(i => i.status === 'resolved' || i.status === 'closed').length;
-    this.stats.urgent = issues.filter(i => i.priority === 'urgent').length;
+    this.stats.open = issues.filter(i =>
+      i.status === 'open' || i.status === 'todo'
+    ).length;
+    this.stats.inProgress = issues.filter(i =>
+      i.status === 'in-progress' || i.status === 'pending'
+    ).length;
+    this.stats.resolved = issues.filter(i =>
+      i.status === 'resolved' || i.status === 'closed'
+    ).length;
+    this.stats.urgent = issues.filter(i => i.priority === 'urgent' || i.priority === 'high').length;
   }
 
   calculateCategoryBreakdown(issues: Issue[]): void {
@@ -137,28 +147,83 @@ export class AdminOverviewComponent implements OnInit {
   }
 
   calculateStatusBreakdown(issues: Issue[]): void {
-    const breakdown: Record<string, number> = {
-      'Open': 0,
-      'In Progress': 0,
-      'Resolved': 0,
-      'Closed': 0
-    };
-
     const statusMap: Record<string, string> = {
       'open': 'Open',
+      'todo': 'Todo',
       'in-progress': 'In Progress',
+      'pending': 'Pending',
       'resolved': 'Resolved',
+      'rejected': 'Rejected',
       'closed': 'Closed'
     };
 
+    // Also pull dynamic labels from the API status cache
+    const apiStatuses = this.issueService.getStatusCache();
+    if (apiStatuses?.length) {
+      apiStatuses.forEach(s => {
+        const key = (s.description || s.name || s.title || '').toLowerCase().replace(/_/g, '-');
+        const label = s.title || s.name || s.description || key;
+        if (key && !statusMap[key]) {
+          statusMap[key] = label.charAt(0).toUpperCase() + label.slice(1);
+        }
+      });
+    }
+
+    const breakdown: Record<string, number> = {};
+
     issues.forEach(issue => {
-      const label = statusMap[issue.status] || 'Open';
-      breakdown[label]++;
+      const label = statusMap[issue.status] || (issue.status.charAt(0).toUpperCase() + issue.status.slice(1));
+      breakdown[label] = (breakdown[label] || 0) + 1;
     });
 
     this.statusData = Object.entries(breakdown)
       .filter(([_, value]) => value > 0)
+      .sort((a, b) => b[1] - a[1])
       .map(([name, value]) => ({ name, value }));
+  }
+
+  calculateAvgResponseTime(issues: Issue[]): void {
+    const resolvedIssues = issues.filter(i =>
+      (i.status === 'resolved' || i.status === 'closed') && i.createdAt && i.updatedAt
+    );
+
+    if (resolvedIssues.length === 0) {
+      // Fallback: compute avg age of all open issues
+      const openIssues = issues.filter(i => i.createdAt);
+      if (openIssues.length === 0) {
+        this.avgResponseTime = 0;
+        this.avgResponseUnit = 'Days';
+        return;
+      }
+      const now = Date.now();
+      const totalHours = openIssues.reduce((sum, i) => {
+        return sum + (now - new Date(i.createdAt).getTime()) / (1000 * 60 * 60);
+      }, 0);
+      const avgHours = totalHours / openIssues.length;
+      if (avgHours < 24) {
+        this.avgResponseTime = Math.round(avgHours * 10) / 10;
+        this.avgResponseUnit = 'Hrs';
+      } else {
+        this.avgResponseTime = Math.round((avgHours / 24) * 10) / 10;
+        this.avgResponseUnit = 'Days';
+      }
+      return;
+    }
+
+    const totalHours = resolvedIssues.reduce((sum, i) => {
+      const created = new Date(i.createdAt).getTime();
+      const updated = new Date(i.updatedAt).getTime();
+      return sum + Math.max(0, updated - created) / (1000 * 60 * 60);
+    }, 0);
+
+    const avgHours = totalHours / resolvedIssues.length;
+    if (avgHours < 24) {
+      this.avgResponseTime = Math.round(avgHours * 10) / 10;
+      this.avgResponseUnit = 'Hrs';
+    } else {
+      this.avgResponseTime = Math.round((avgHours / 24) * 10) / 10;
+      this.avgResponseUnit = 'Days';
+    }
   }
 
   formatDate(date: string): string {

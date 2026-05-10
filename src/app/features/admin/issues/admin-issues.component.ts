@@ -81,7 +81,7 @@ export class AdminIssuesComponent implements OnInit {
 
   public loadData(): void {
     const clientId = 'KANHA1'; // Ideally from auth service
-    
+
     // Synchronize primary data streams
     forkJoin({
       issues: this.issueService.getIssues(),
@@ -110,7 +110,7 @@ export class AdminIssuesComponent implements OnInit {
         }));
 
         const existingIds = new Set(options.map((o: any) => o.value));
-        
+
         // Inject assigned/escalated staff from live issues
         this.allIssues.forEach(issue => {
           if (issue.assignedTo && !existingIds.has(issue.assignedTo)) {
@@ -134,7 +134,7 @@ export class AdminIssuesComponent implements OnInit {
 
   public onSearch(): void {
     const query = (this.searchQuery || '').toLowerCase().trim();
-    
+
     this.filteredIssues = this.allIssues.filter(issue => {
       // 1. Robust Search Matching
       const matchesSearch = !query ||
@@ -145,12 +145,12 @@ export class AdminIssuesComponent implements OnInit {
         (issue.category || '').toLowerCase().includes(query);
 
       // 2. Normalized Status Matching using Numerical IDs
-      const matchesStatus = this.filterStatus === 'all' || 
-                           issue.statusId === Number(this.filterStatus);
+      const matchesStatus = this.filterStatus === 'all' ||
+        issue.statusId === Number(this.filterStatus);
 
       // 3. Priority Matching
-      const matchesPriority = this.filterPriority === 'all' || 
-                             issue.priority === this.filterPriority;
+      const matchesPriority = this.filterPriority === 'all' ||
+        issue.priority === this.filterPriority;
 
       return matchesSearch && matchesStatus && matchesPriority;
     });
@@ -159,12 +159,12 @@ export class AdminIssuesComponent implements OnInit {
   public formatDate(date: string): string {
     if (!date) return 'N/A';
     const d = new Date(date);
-    return d.toLocaleDateString('en-GB', { 
-      day: '2-digit', 
-      month: 'short', 
-      hour: '2-digit', 
+    return d.toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: 'short',
+      hour: '2-digit',
       minute: '2-digit',
-      hour12: false 
+      hour12: false
     });
   }
 
